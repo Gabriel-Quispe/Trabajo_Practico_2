@@ -70,3 +70,12 @@ def Listar_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) ->
 			print(f"	{cancion}")
 
 		print("-------------------------------")
+
+def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> None:
+
+	Nombre = input("Ingrese el Nombre de su Playlists: ")
+
+	print("Ingrese alguna Descripcion:")
+	Descripcion = input("")
+
+	youtube.playlists().insert(part = "snippet", body = dict(snippet = dict(title = Nombre, description = Descripcion))).execute()

@@ -43,3 +43,14 @@ def Listar_Playlist_Spotify( spotify : Spotify) -> None:
 			print(f"	{nombre_cancion}")
 
 		print("-------------------------------")
+
+def Crear_Playlist_Spotify( spotify: Spotify) -> None:
+
+	Nombre = input("Ingrese el Nombre de su Playlists: ")
+
+	print("Ingrese alguna Descripcion:")
+	Descripcion = input("")
+
+	user = spotify.current_user()
+
+	spotify.playlist_create(user.id, Nombre, public = True, description = Descripcion)

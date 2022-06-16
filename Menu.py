@@ -14,7 +14,7 @@ def Menu_Spotify() -> None:
 
 		spotify = SP.Generar_Servicio_Spotify()
 
-		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
+		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "7" and opcion != "Salir" and opcion != "Cambiar" :
 
 			system("cls")
 
@@ -23,9 +23,10 @@ def Menu_Spotify() -> None:
 			print(" 1 | Listar Playlist ")
 			print(" 2 | Crear Playlist ")
 			print(" 3 | Añadir a Playlist ")
-			print(" 4 | Analizar Playlist")
-			print(" 5 | Sincronizar Playlist")
-			print(" 6 | Exportar Playlist ")	
+			print(" 4 | Eliminar Playlist")
+			print(" 5 | Analizar Playlist")
+			print(" 6 | Sincronizar Playlist")
+			print(" 7 | Exportar Playlist ")	
 			print(" Cambiar | Ingresara a Youtube")
 			print(" Salir | Cerrara el Programa")
 			print("_________________________")
@@ -39,15 +40,27 @@ def Menu_Spotify() -> None:
 
 			input()
 
-		#elif opcion == "2":
+		elif opcion == "2":
 
-		#elif opcion =="3":
+			system("cls")
 
-		#elif opcion == "4":
+			SP.Crear_Playlist_Spotify( spotify )
 
-		#elif opcion == "5":
+		elif opcion =="3":
 
-		#elif opcion == "6":
+			return
+
+		elif opcion == "4":
+
+			return
+
+		elif opcion == "5":
+
+			return
+
+		elif opcion == "6":
+
+			return
 
 		if opcion == "Salir":
 
@@ -72,7 +85,7 @@ def Menu_Youtube() -> None:
 
 		youtube = YT.Generar_Servicios_Youtube()
 
-		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
+		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "7" and opcion != "Salir" and opcion != "Cambiar" :
 
 			system("cls")
 
@@ -81,9 +94,10 @@ def Menu_Youtube() -> None:
 			print(" 1 | Listar Playlist ")
 			print(" 2 | Crear Playlist ")
 			print(" 3 | Añadir a Playlist ")
-			print(" 4 | Analizar Playlist")
-			print(" 5 | Sincronizar Playlist")
-			print(" 6 | Exportar Playlist ")	
+			print(" 4 | Crear Playlist ")
+			print(" 5 | Analizar Playlist")
+			print(" 6 | Sincronizar Playlist")
+			print(" 7 | Exportar Playlist ")	
 			print(" Cambiar | Ingresara a Spotify")	
 			print(" Salir | Cerrara el Programa")
 			print("_________________________")
@@ -97,15 +111,27 @@ def Menu_Youtube() -> None:
 
 			input()
 
-		#elif opcion == "2":
+		elif opcion == "2":
 
-		#elif opcion =="3":
+			system("cls")
 
-		#elif opcion == "4":
+			YT.Crear_Playlist_Youtube( youtube )
 
-		#elif opcion == "5":
+		elif opcion =="3":
 
-		#elif opcion == "6":
+			return
+
+		elif opcion == "4":
+
+			return
+
+		elif opcion == "5":
+
+			return
+
+		elif opcion == "6":
+
+			return
 
 		if opcion == "Salir":
 
