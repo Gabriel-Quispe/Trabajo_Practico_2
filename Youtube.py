@@ -8,10 +8,6 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-import google_auth_oauthlib.flow
-import googleapiclient.discovery
-import googleapiclient.errors
-
 import os
  
 SCOPES = ['https://www.googleapis.com/auth/youtube',
@@ -22,10 +18,8 @@ SCOPES = ['https://www.googleapis.com/auth/youtube',
 ARCHIVO_SECRET_CLIENT = 'credenciales.json'
 ARCHIVO_TOKEN = 'token.json'
 
-os.environ["OAUTHLIB_INSECURE_TRANSPORT"] = "1"
 
-
-def generar_servicio()->None:
+def Generar_Servicios_Youtube() -> 'googleapiclient.discovery.Resource':
 
     creds = None
     
@@ -50,3 +44,29 @@ def generar_servicio()->None:
             token.write(creds.to_json())
 
     return build('youtube', 'v3', credentials = creds)
+
+
+def Listar_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> None:
+
+	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
+
+	cantidad_playlist = len(Info_playlist['items'])
+
+	for playlists in range(cantidad_playlist):
+
+		print(Info_playlist['items'][playlists]['snippet']['title'])
+
+		playlist_id = Info_playlist['items'][playlists]['id']
+
+		Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = playlist_id , maxResults = 50).execute()
+
+		total_canciones = Datos_playlist['pageInfo']['totalResults']
+
+		
+		for j in range(total_canciones):
+
+			cancion = Datos_playlist['items'][j]['snippet']['title']
+
+			print(f"	{cancion}")
+
+		print("-------------------------------")
