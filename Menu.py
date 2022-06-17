@@ -14,7 +14,7 @@ def Menu_Spotify() -> None:
 
 		spotify = SP.Generar_Servicio_Spotify()
 
-		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "7" and opcion != "Salir" and opcion != "Cambiar" :
+		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
 
 			system("cls")
 
@@ -23,10 +23,9 @@ def Menu_Spotify() -> None:
 			print(" 1 | Listar Playlist ")
 			print(" 2 | Crear Playlist ")
 			print(" 3 | Añadir a Playlist ")
-			print(" 4 | Eliminar Playlist")
-			print(" 5 | Analizar Playlist")
-			print(" 6 | Sincronizar Playlist")
-			print(" 7 | Exportar Playlist ")	
+			print(" 4 | Analizar Playlist")
+			print(" 5 | Sincronizar Playlist")
+			print(" 6 | Exportar Playlist ")	
 			print(" Cambiar | Ingresara a Youtube")
 			print(" Salir | Cerrara el Programa")
 			print("_________________________")
@@ -72,7 +71,6 @@ def Menu_Spotify() -> None:
 
 			Iterable = 1
 
-
 def Menu_Youtube() -> None:
 
 	Iterable = 0
@@ -85,7 +83,7 @@ def Menu_Youtube() -> None:
 
 		youtube = YT.Generar_Servicios_Youtube()
 
-		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "7" and opcion != "Salir" and opcion != "Cambiar" :
+		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
 
 			system("cls")
 
@@ -94,10 +92,9 @@ def Menu_Youtube() -> None:
 			print(" 1 | Listar Playlist ")
 			print(" 2 | Crear Playlist ")
 			print(" 3 | Añadir a Playlist ")
-			print(" 4 | Crear Playlist ")
-			print(" 5 | Analizar Playlist")
-			print(" 6 | Sincronizar Playlist")
-			print(" 7 | Exportar Playlist ")	
+			print(" 4 | Analizar Playlist")
+			print(" 5 | Sincronizar Playlist")
+			print(" 6 | Exportar Playlist ")	
 			print(" Cambiar | Ingresara a Spotify")	
 			print(" Salir | Cerrara el Programa")
 			print("_________________________")
@@ -143,17 +140,15 @@ def Menu_Youtube() -> None:
 
 			Iterable = 1
 
-
-
 def main() -> None:
 
 	Programa = str()
 
-	while Programa != "Youtube" and Programa != "Spotify" :
+	while Programa != "Youtube" and Programa != "Spotify" and Programa != "SALIR" :
 
 		print("Bienvendio su Aplicacion de Control de Playlist")
 
-		Programa = input("Seleccione: | Youtube | o | Spotify | : ")
+		Programa = input("Seleccione: | Youtube | o | Spotify | o | SALIR |: ")
 
 		system("cls")
 
@@ -161,8 +156,12 @@ def main() -> None:
 
 		Menu_Spotify()
 
-	else:
+	elif Programa == "Youtube":
 
 		Menu_Youtube()
+
+	else:
+
+		print("Gracias, vuelva pronto")
 
 main()
