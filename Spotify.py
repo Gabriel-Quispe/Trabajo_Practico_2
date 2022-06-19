@@ -6,8 +6,8 @@ from tekore import Spotify
 #Estos datos se obtienen en "https://developer.spotify.com/dashboard/login"
 #solo creen una aplicacion con una cuenta de spotify y tendran
 #arriba a la derecha acceso a estos datos
-CLIENT_ID = '9446fa59f25043cda0f3162443491415'
-CLIENT_SECRET = 'ddb6635b0f8b4d999e499172db01d5f6'
+CLIENT_ID = '56aa6d858d4041b9bdf3a30facecd839'
+CLIENT_SECRET = '71825c90b8aa464985acfe7e51822cd5'
 
 #En el apartado de "EDIT SETTINGS" ingresen 
 #en "Redirect URIs" esta URL:
@@ -76,11 +76,49 @@ def Crear_Playlist_Spotify( spotify: Spotify) -> None:
 	#Crea la playlist con los datos dados
 	spotify.playlist_create(spotify.current_user().id, Nombre, public = True, description = Descripcion)
 
+#pide al usuario una palabra clave y busca en spotify canciones 
+def buscar_sp(spotify: Spotify) -> str:
+	rango_busqueda = 5
+	aux:bool = True
+	while(aux == True):
+		buscador = input("ingrese que cancion quiere buscar: ")
+		track = spotify.search(buscador)
+		if(len(track[0].items) == 0):
+			print("no se encontro resultado")
+		else:
+			print("==========================================")
+			for i in range(rango_busqueda):
+				print(f" {i} - nombre: {track[0].items[i].name}, artista: {track[0].items[i].artists[0].name}, album: {track[0].items[i].album.name}")
+			print("==========================================")
+
+			centinela = int(input("Ingrese cual cancion quiere añadir a la playlist o -1 para volver a buscar: "))
+			while(centinela < -1 or centinela > rango_busqueda):
+				centinela = int(input("ERROR: Ingrese cual cancion quiere añadir a la playlist o -1 para volver a buscar: "))
+			if(centinela == -1):
+				aux = True
+			else:
+				aux = False
+			os.system("cls")
+
+			
+	#devuelvo una uri en str, pero al momento de añadir la cancion a la playlist tiene que ser una lista
+	return track[0].items[centinela].uri
+
+	#spotify.playlist_add(spotify.playlists(spotify.current_user().id).items[0].id, [track[0].items[centinela].uri])
+
 def anadir_cancion(spotify : Spotify) -> None:
 
-	print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.name)
-	print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.id)
-	print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.uri)
+	#print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.name)
+	#print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.id)
+	#print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.uri)
+	
+	uri_track_nueva = []
+	#vas a la cancion-> tres puntitos -> compartit -> alt+ctrl ->copiar uri
+	uri_track_nueva.append("spotify:track:7MeXwzhSDGfqNfuFANgzVC")
+	uri_track_nueva.append("spotify:track:3AwLxSqo1jOOMpNsgxqRNE")
+	id_playlist = spotify.playlists(spotify.current_user().id).items[0].id
+
+	spotify.playlist_add(id_playlist, uri_track_nueva)
 
 
 def sincronizar_lista_spotify(spotify : Spotify) -> None:

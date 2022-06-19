@@ -54,8 +54,10 @@ def Menu_Spotify() -> None:
 			SP.Crear_Playlist_Spotify( spotify )
 
 		elif opcion =="3":
-			
-			SP.anadir_cancion(spotify)
+			os.system("cls")
+			print(SP.buscar_sp(spotify))
+
+			#SP.anadir_cancion(spotify)
 
 			return
 
@@ -143,6 +145,7 @@ def Menu_Youtube() -> None:
 
 			diccionario_sinc_yt:dict = {}
 			leer_archivo_sinc("sync_yt.csv", diccionario_sinc_yt)
+			
 
 			#crear playlist de yt en spotify
 			#agregar las canciones de la lista de diccionarios_sinc_yt en la lista recien creada en sp
