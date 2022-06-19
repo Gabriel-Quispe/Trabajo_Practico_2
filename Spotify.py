@@ -75,3 +75,29 @@ def Crear_Playlist_Spotify( spotify: Spotify) -> None:
 
 	#Crea la playlist con los datos dados
 	spotify.playlist_create(spotify.current_user().id, Nombre, public = True, description = Descripcion)
+
+def anadir_cancion(spotify : Spotify) -> None:
+
+	print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.name)
+	print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.id)
+	print(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[0].id).items[0].track.uri)
+
+
+def sincronizar_lista_spotify(spotify : Spotify) -> None:
+	print("Playlists en Spotify:")
+	for i in range(spotify.playlists(spotify.current_user().id).total):
+		print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}:")
+	
+	centinela = int(input("Ingrese que playlist quiere sincronizar: "))
+	while(centinela < 0 or centinela > spotify.playlists(spotify.current_user().id).total):
+		centinela = int(input("ERROR: Ingrese que playlist quiere sincronizar nuevamente: "))
+
+	archivo = open("sync_sp.csv", "w", newline = "")
+	archivo.write(spotify.playlists(spotify.current_user().id).items[centinela].name + '\n')
+	for j in range(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[centinela].id).total):
+		if(j != spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[centinela].id).total - 1):
+			archivo.write(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[centinela].id).items[j].track.name + ",")
+		else:
+			archivo.write(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[centinela].id).items[j].track.name)
+
+	archivo.close()

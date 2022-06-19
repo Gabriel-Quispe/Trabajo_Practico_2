@@ -1,6 +1,8 @@
 from __future__ import print_function
 
 import os.path
+import os
+import csv
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -8,7 +10,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-import os
+
  
 #Son los permisos que se le pediran al usuario
 SCOPES = ['https://www.googleapis.com/auth/youtube',
@@ -78,12 +80,13 @@ def Listar_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) ->
 
 		#Obtiene los datos que contiene la playlist
 		Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = Info_playlist['items'][playlists]['id'] , maxResults = 50).execute()
-
+		print(Datos_playlist['items'][0]['snippet']['title'])
 		#Ingresa a las canciones que contiene		
 		for j in range(Datos_playlist['pageInfo']['totalResults']):
 
 			#Imprime su titulo
 			print(f"	{Datos_playlist['items'][j]['snippet']['title']}")
+
 
 		print("-------------------------------")
 
@@ -102,3 +105,30 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 
 	#Crea la playlist con los datos dados
 	youtube.playlists().insert(part = "snippet", body = dict(snippet = dict(title = Nombre, description = Descripcion))).execute()
+
+
+def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') -> None:
+	os.system('cls')
+	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
+	print("Playlists en Youtube:")
+	for playlists in range(len(Info_playlist['items'])):
+
+		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
+
+	centinela = int(input("Ingrese que playlist quiere sincronizar: "))
+
+	while(centinela < 0 or centinela > len(Info_playlist['items'])):
+		centinela = int(input("ERROR: Ingrese que playlist quiere sincronizar nuevamente: "))
+
+	Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = Info_playlist['items'][centinela]['id'] , maxResults = 50).execute()
+	
+
+	archivo = open("sync_yt.csv", "w", newline = "")
+	archivo.write(Info_playlist['items'][centinela]['snippet']['title'] + '\n')
+	for i in range(Datos_playlist['pageInfo']['totalResults']):
+		if(i != Datos_playlist['pageInfo']['totalResults'] - 1):
+			archivo.write(Datos_playlist['items'][i]['snippet']['title'] + ",")
+		else:
+			archivo.write(Datos_playlist['items'][i]['snippet']['title'])
+
+	archivo.close()

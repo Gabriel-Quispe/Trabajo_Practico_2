@@ -1,6 +1,15 @@
-from os import system
+#from os import systeminstall
+import os
 import Youtube as YT
 import Spotify as SP
+import csv
+
+def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
+	archivo = open(nombre_archivo, "r")
+	diccionario['nombre_playlist'] = archivo.readline()
+	canciones_str = archivo.readline()
+	diccionario['lista_canciones'] = canciones_str.split(",")
+	archivo.close()
 
 def Menu_Spotify() -> None:
 
@@ -8,7 +17,7 @@ def Menu_Spotify() -> None:
 
 	while Iterable == 0 :
 
-		system("cls")
+		os.system("cls")
 
 		opcion = str()
 
@@ -16,7 +25,7 @@ def Menu_Spotify() -> None:
 
 		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
 
-			system("cls")
+			os.system("cls")
 
 			print("Menu de Spotify:")
 			print("------------------------------")
@@ -33,19 +42,20 @@ def Menu_Spotify() -> None:
 
 		if opcion == "1":
 
-			system("cls")
-
+			os.system("cls")
 			SP.Listar_Playlist_Spotify( spotify )
 
 			input()
 
 		elif opcion == "2":
 
-			system("cls")
+			os.system("cls")
 
 			SP.Crear_Playlist_Spotify( spotify )
 
 		elif opcion =="3":
+			
+			SP.anadir_cancion(spotify)
 
 			return
 
@@ -54,6 +64,11 @@ def Menu_Spotify() -> None:
 			return
 
 		elif opcion == "5":
+			youtube = YT.Generar_Servicios_Youtube()
+			SP.sincronizar_lista_spotify(spotify)
+
+			diccionario_sinc_sp:dict = {}
+			leer_archivo_sinc("sync_sp.csv", diccionario_sinc_sp)
 
 			return
 
@@ -77,7 +92,7 @@ def Menu_Youtube() -> None:
 
 	while Iterable == 0 :
 
-		system("cls")
+		os.system("cls")
 
 		opcion = str()
 
@@ -85,7 +100,7 @@ def Menu_Youtube() -> None:
 
 		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
 
-			system("cls")
+			os.system("cls")
 
 			print("Menu de Youtube:")
 			print("------------------------------")
@@ -102,7 +117,7 @@ def Menu_Youtube() -> None:
 
 		if opcion == "1":
 
-			system("cls")
+			os.system("cls")
 
 			YT.Listar_Playlist_Youtube( youtube )
 
@@ -110,7 +125,7 @@ def Menu_Youtube() -> None:
 
 		elif opcion == "2":
 
-			system("cls")
+			os.system("cls")
 
 			YT.Crear_Playlist_Youtube( youtube )
 
@@ -122,9 +137,18 @@ def Menu_Youtube() -> None:
 
 			return
 
-		elif opcion == "5":
+		elif opcion == "5": 
+			spotify = SP.Generar_Servicio_Spotify()
+			YT.sincronizar_lista_youtube(youtube)
+
+			diccionario_sinc_yt:dict = {}
+			leer_archivo_sinc("sync_yt.csv", diccionario_sinc_yt)
+
+			#crear playlist de yt en spotify
+			#agregar las canciones de la lista de diccionarios_sinc_yt en la lista recien creada en sp
 
 			return
+
 
 		elif opcion == "6":
 
@@ -142,21 +166,22 @@ def Menu_Youtube() -> None:
 
 def main() -> None:
 
+	os.system("cls")
 	Programa = str()
 
-	while Programa != "Youtube" and Programa != "Spotify" and Programa != "SALIR" :
+	while Programa != "Youtube" and Programa != "Spotify" and Programa != "SALIR" and Programa != "y" and Programa != "s":
 
 		print("Bienvendio su Aplicacion de Control de Playlist")
 
 		Programa = input("Seleccione: | Youtube | o | Spotify | o | SALIR |: ")
 
-		system("cls")
+		os.system("cls")
 
-	if Programa == "Spotify":
+	if Programa == "Spotify" or Programa == "s":
 
 		Menu_Spotify()
 
-	elif Programa == "Youtube":
+	elif Programa == "Youtube" or Programa == "y":				
 
 		Menu_Youtube()
 
