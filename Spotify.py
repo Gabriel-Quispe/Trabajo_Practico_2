@@ -76,14 +76,14 @@ def Crear_Playlist_Spotify( spotify: Spotify) -> None:
 	#Crea la playlist con los datos dados
 	spotify.playlist_create(spotify.current_user().id, Nombre, public = True, description = Descripcion)
 
-def seleccionar_playlists(spotify: Spotify, sinc:bool) -> str:
+def seleccionar_playlists(spotify: Spotify):
 	print(f"Playlists en spotify de {spotify.user(spotify.current_user().id).display_name}:")
 	for i in range(spotify.playlists(spotify.current_user().id).total):
 		print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}")
 
-	centinela:int = int(input("ingrese que lista quiere agragar: "))
+	centinela:int = int(input("Seleccione una lista: "))
 	while(centinela < 0 and centinela > spotify.playlists(spotify.current_user().id).total):
-		centinela = int(input("ERROR: ingrese que lista quiere agragar: "))
+		centinela = int(input("ERROR: Seleccione una lista: "))
 	
 	#devuelvo el objeto entero despues se ulitiza .id .name .uri etc
 	return spotify.playlists(spotify.current_user().id).items[centinela]
@@ -112,15 +112,13 @@ def buscar_sp(spotify: Spotify):
 				aux = False
 			os.system("cls")
 
-	#devuelvo una uri en str, pero al momento de añadir la cancion a la playlist tiene que ser una lista
+	#al momento de añadir la cancion a la playlist tiene que ser una lista
 	return track[0].items[centinela]
 
-	#spotify.playlist_add(spotify.playlists(spotify.current_user().id).items[0].id, [track[0].items[centinela].uri])
 
 def anadir_cancion(spotify : Spotify, playlist_destino, track_a_agregar ) -> None:
 	#vas a la cancion-> tres puntitos -> compartit -> alt+ctrl ->copiar uri
 	uri_track_nueva = []
-
 	spotify.playlist_add(playlist_destino.id, [track_a_agregar.uri])
 
 
