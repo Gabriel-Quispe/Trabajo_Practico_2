@@ -55,9 +55,10 @@ def Menu_Spotify() -> None:
 
 		elif opcion =="3":
 			os.system("cls")
-			print(SP.buscar_sp(spotify))
-
-			#SP.anadir_cancion(spotify)
+			nueva_track = SP.buscar_sp(spotify)
+			#print(nueva_track.artists[0])
+			playlist_agregar = SP.seleccionar_playlists(spotify, False)
+			SP.anadir_cancion(spotify, playlist_agregar, nueva_track)
 
 			return
 
