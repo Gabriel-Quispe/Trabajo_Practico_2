@@ -19,6 +19,38 @@ def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
 	diccionario['lista_canciones'] = canciones_str.split(",")
 	archivo.close()
 
+def genius_funcion(nueva_track, imprimir_pantalla:bool) -> None:
+	genius = lyricsgenius.Genius(CLIENTE_ACCESS_TOKE_GENIUS)
+
+	genius_tack_artist = genius.search(nueva_track.artists[0].name, type_='artist')
+	song_genius = genius.search_artist_songs(	artist_id = genius_tack_artist['sections'][0]['hits'][0]['result']['id'], 
+												search_term = nueva_track.name,
+												per_page = 2, 
+												sort =nueva_track.artists[0].name )
+
+	dict_final:dict = {}
+	for i in range(len(song_genius['songs'])):
+		print(f"{song_genius['songs'][i]['title']} - {song_genius['songs'][i]['artist_names']}" )
+		if(	(nueva_track.name.lower() == song_genius['songs'][i]['title'].lower()) and
+			(nueva_track.artists[0].name.lower() == song_genius['songs'][i]['artist_names'].lower())):
+
+			dict_final = song_genius['songs'][i]
+
+
+	if(len(dict_final) != 0):
+		letra = genius.lyrics(song_id = dict_final['id'])
+		if(imprimir_pantalla == False):
+			#lo tiro en un txt porque si lo tiro en la consola me la brickea
+			print(f"La letra de {dict_final['title']} de {dict_final['artist_names']} se exporto exitosamente al archivo letra_aux.txt")
+			if(letra != None):
+				letra_aux = open("letra_aux.txt", "w")
+				letra_aux.write(letra)
+				letra_aux.close()
+		else:
+			print(letra)
+	else:
+		print("Nos se pudo encontrar la letra")
+
 def Menu_Spotify() -> None:
 
 	Iterable = 0
@@ -63,31 +95,10 @@ def Menu_Spotify() -> None:
 
 		elif opcion =="3":
 			os.system("cls")
-			genius = lyricsgenius.Genius(CLIENTE_ACCESS_TOKE_GENIUS)
 
 			nueva_track = SP.buscar_sp(spotify)
-			genius_tack_artist = genius.search(nueva_track.artists[0].name, type_='artist')
-			genius_artist_id =  genius_tack_artist['sections'][0]['hits'][0]['result']['id']
+			genius_funcion(nueva_track, True)
 
-			song_genius = genius.search_artist_songs(	artist_id = genius_artist_id, 
-														search_term = nueva_track.name,
-														per_page = 2, 
-														sort =nueva_track.artists[0].name )
-			dict_final = {}
-			for i in range(len(song_genius['songs'])):
-				if(		(nueva_track.name == song_genius['songs'][i]['title']) 
-						and (nueva_track.artists[0].name == song_genius['songs'][i]['artist_names']) 
-						):
-					dict_final = song_genius['songs'][i]
-			if(len(dict_final) != 0):
-				print(f"La letra de {dict_final['title']} se exporto exitosamente al archivo letra_aux.txt")
-				letra = genius.lyrics(song_id = dict_final['id'])
-				if(letra != None):
-					letra_aux = open("letra_aux.txt", "w")
-					letra_aux.write(letra)
-					letra_aux.close()
-			else:
-				print("Nos se pudo encontrar la letra")
 			playlist_agregar = SP.seleccionar_playlists(spotify)
 			SP.anadir_cancion(spotify, playlist_agregar, nueva_track)
 
