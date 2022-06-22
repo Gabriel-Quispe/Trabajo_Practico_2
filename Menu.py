@@ -11,6 +11,12 @@ CLIENTE_ID_GENIUS = '0aTUJE7lllfO1eWN_Ccbxw7v6ryfPsMxdG4Q7W7LP1wM1ZXEhKZ9v4nwNVB
 CLIENTE_SECRET_GENIUS = 'jdLpCzyEhsbakzcv44OfkHxnGtvEs93Vjrv02uSgsKzURtMEZ-g-S3cREkvYqDpQ7eFgyCkseHEK-wbVctCe-g'
 CLIENTE_ACCESS_TOKE_GENIUS = 'LJdoBgeVh5a90i4Svo-DeMhiSgO2Y9hdgb2ZqyejhGHgdC-qj4RLcWNPdiXn6ZSP'
 
+def comparar_str_a_en_b(a:str, b:str) -> bool:
+	a1:str = a.replace(" ","")
+	b1:str = b.replace(" ","")
+	if(a1.lower() in  b1.lower()):
+		return True
+	return False
 
 def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
 	archivo = open(nombre_archivo, "r")
@@ -31,9 +37,9 @@ def genius_funcion(nueva_track, imprimir_pantalla:bool) -> None:
 	dict_final:dict = {}
 	for i in range(len(song_genius['songs'])):
 		print(f"{song_genius['songs'][i]['title']} - {song_genius['songs'][i]['artist_names']}" )
-		if(	(nueva_track.name.lower() == song_genius['songs'][i]['title'].lower()) and
-			(nueva_track.artists[0].name.lower() == song_genius['songs'][i]['artist_names'].lower())):
-
+		if((	comparar_str_a_en_b(nueva_track.name, song_genius['songs'][i]['title']) == True) and 
+		   (	comparar_str_a_en_b(nueva_track.artists[0].name, song_genius['songs'][i]['artist_names']) == True)):
+	
 			dict_final = song_genius['songs'][i]
 
 
@@ -176,7 +182,7 @@ def Menu_Youtube() -> None:
 			YT.Crear_Playlist_Youtube( youtube )
 
 		elif opcion =="3":
-
+			YT.buscar(youtube)
 			return
 
 		elif opcion == "4":

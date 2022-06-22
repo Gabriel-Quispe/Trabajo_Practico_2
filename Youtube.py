@@ -1,7 +1,9 @@
 from __future__ import print_function
+from ast import keyword
 
 import os.path
 import os
+import json
 import csv
 
 from google.auth.transport.requests import Request
@@ -80,8 +82,7 @@ def Listar_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) ->
 
 		#Obtiene los datos que contiene la playlist
 		Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = Info_playlist['items'][playlists]['id'] , maxResults = 50).execute()
-		print(Datos_playlist['items'][0]['snippet']['title'])
-		#Ingresa a las canciones que contiene		
+	
 		for j in range(Datos_playlist['pageInfo']['totalResults']):
 
 			#Imprime su titulo
@@ -108,6 +109,7 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 
 
 def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') -> None:
+
 	os.system('cls')
 	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
 	print("Playlists en Youtube:")
@@ -132,3 +134,46 @@ def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') ->
 			archivo.write(Datos_playlist['items'][i]['snippet']['title'])
 
 	archivo.close()
+
+def seleccionar_playlist_yt(youtube : 'googleapiclient.discovery.Resource'):
+	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
+	for playlists in range(len(Info_playlist['items'])):
+		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
+
+	centinela:int = int(input("Seleccione una lista: "))
+	while(centinela < 0 and centinela > len(Info_playlist['items'])):
+		centinela = int(input("ERROR: Seleccione una lista: "))
+
+	return Info_playlist['items'][centinela]
+
+def buscar(youtube : 'googleapiclient.discovery.Resource'):
+	palabra_clave = input("Ingrese que desea buscar en youtube: ")
+	#palabra_clave = 'chop suey'
+	resultado = youtube.search().list(
+			part = "id,snippet",
+			q = palabra_clave,
+			maxResults = 5
+	).execute()
+
+	for i in range(len(resultado['items'])):
+		print(f"{resultado['items'][i]['snippet']['title']} - {resultado['items'][i]['snippet']['channelTitle']}")
+
+	centinela:int = int(input("Seleccione una lista: "))
+	while(centinela < 0 and centinela > len(resultado['items'])):
+		centinela = int(input("ERROR: Seleccione una lista: "))
+
+	
+	playlist_seleccionada = seleccionar_playlist_yt(youtube)
+
+	youtube.playlistItems().insert(part = "snippet",
+		body = {
+			'snippet': {
+				'playlistId': playlist_seleccionada['id'],
+				'resourceId': {
+                      'kind': 'youtube#video',
+                  'videoId': resultado['items'][centinela]['id']['videoId']
+			}
+		}
+	}
+		 ).execute()
+	Listar_Playlist_Youtube( youtube)
