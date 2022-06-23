@@ -107,7 +107,6 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 	#Crea la playlist con los datos dados
 	youtube.playlists().insert(part = "snippet", body = dict(snippet = dict(title = Nombre, description = Descripcion))).execute()
 
-
 def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') -> None:
 
 	os.system('cls')
@@ -146,9 +145,10 @@ def seleccionar_playlist_yt(youtube : 'googleapiclient.discovery.Resource'):
 
 	return Info_playlist['items'][centinela]
 
+
+
 def buscar(youtube : 'googleapiclient.discovery.Resource'):
 	palabra_clave = input("Ingrese que desea buscar en youtube: ")
-	#palabra_clave = 'chop suey'
 	resultado = youtube.search().list(
 			part = "id,snippet",
 			q = palabra_clave,
@@ -156,13 +156,12 @@ def buscar(youtube : 'googleapiclient.discovery.Resource'):
 	).execute()
 
 	for i in range(len(resultado['items'])):
-		print(f"{resultado['items'][i]['snippet']['title']} - {resultado['items'][i]['snippet']['channelTitle']}")
+		print(f" {i} - {resultado['items'][i]['snippet']['title']} - {resultado['items'][i]['snippet']['channelTitle']}")
 
-	centinela:int = int(input("Seleccione una lista: "))
+	centinela:int = int(input("Seleccione una cancion: "))
 	while(centinela < 0 and centinela > len(resultado['items'])):
-		centinela = int(input("ERROR: Seleccione una lista: "))
+		centinela = int(input("ERROR: Seleccione una cancion: "))
 
-	
 	playlist_seleccionada = seleccionar_playlist_yt(youtube)
 
 	youtube.playlistItems().insert(part = "snippet",
@@ -177,3 +176,4 @@ def buscar(youtube : 'googleapiclient.discovery.Resource'):
 	}
 		 ).execute()
 	Listar_Playlist_Youtube( youtube)
+	return resultado['items'][centinela]

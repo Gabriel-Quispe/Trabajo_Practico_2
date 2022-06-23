@@ -57,6 +57,13 @@ def genius_funcion(nueva_track, imprimir_pantalla:bool) -> None:
 	else:
 		print("Nos se pudo encontrar la letra")
 
+def filtrar_string(nueva_track:str, basura:str):
+	basura = basura.lower()
+	nueva_track =  nueva_track.lower()
+	if(comparar_str_a_en_b(basura, nueva_track) == True):
+		nueva_track = nueva_track.replace(basura, "")
+	print(nueva_track)
+
 def Menu_Spotify() -> None:
 
 	Iterable = 0
@@ -112,7 +119,7 @@ def Menu_Spotify() -> None:
 
 		elif opcion == "4":
 
-
+			
 			return
 
 		elif opcion == "5":
@@ -182,11 +189,16 @@ def Menu_Youtube() -> None:
 			YT.Crear_Playlist_Youtube( youtube )
 
 		elif opcion =="3":
-			YT.buscar(youtube)
+			palabra = YT.buscar(youtube)
+
+			filtrar_string(palabra['snippet']['title'], palabra['snippet']['channelTitle'])
+
 			return
 
 		elif opcion == "4":
-
+			filtrar_string("The stroke VEVO", "VEvo")
+			filtrar_string("The killers official video", "official video")
+			filtrar_string("The killers (official video)", "(official video)")
 			return
 
 		elif opcion == "5": 
