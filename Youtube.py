@@ -145,8 +145,6 @@ def seleccionar_playlist_yt(youtube : 'googleapiclient.discovery.Resource'):
 
 	return Info_playlist['items'][centinela]
 
-
-
 def buscar(youtube : 'googleapiclient.discovery.Resource'):
 	palabra_clave = input("Ingrese que desea buscar en youtube: ")
 	resultado = youtube.search().list(
@@ -175,5 +173,5 @@ def buscar(youtube : 'googleapiclient.discovery.Resource'):
 		}
 	}
 		 ).execute()
-	Listar_Playlist_Youtube( youtube)
+	#Listar_Playlist_Youtube( youtube)
 	return resultado['items'][centinela]

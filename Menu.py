@@ -25,24 +25,31 @@ def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
 	diccionario['lista_canciones'] = canciones_str.split(",")
 	archivo.close()
 
-def genius_funcion(nueva_track, imprimir_pantalla:bool) -> None:
+def genius_funcion(nueva_track, artista, imprimir_pantalla:bool) -> None:
 	genius = lyricsgenius.Genius(CLIENTE_ACCESS_TOKE_GENIUS)
-
-	genius_tack_artist = genius.search(nueva_track.artists[0].name, type_='artist')
-	song_genius = genius.search_artist_songs(	artist_id = genius_tack_artist['sections'][0]['hits'][0]['result']['id'], 
-												search_term = nueva_track.name,
+	genius_tack_artist = genius.search(artista.title(), type_='artist')
+	export:int = 0
+	for i in range(len(genius_tack_artist['sections'][0]['hits'])):
+		if(genius_tack_artist['sections'][0]['hits'][i]['result']['name'].lower() == artista.lower()):
+			export = i
+		
+	song_genius = genius.search_artist_songs(	artist_id = genius_tack_artist['sections'][0]['hits'][export]['result']['id'], 
+												search_term = nueva_track,
 												per_page = 2, 
-												sort =nueva_track.artists[0].name )
+												sort = artista )
 
 	dict_final:dict = {}
+	basta = False
 	for i in range(len(song_genius['songs'])):
-		print(f"{song_genius['songs'][i]['title']} - {song_genius['songs'][i]['artist_names']}" )
-		if((	comparar_str_a_en_b(nueva_track.name, song_genius['songs'][i]['title']) == True) and 
-		   (	comparar_str_a_en_b(nueva_track.artists[0].name, song_genius['songs'][i]['artist_names']) == True)):
-	
+		#print(f"{song_genius['songs'][i]['title']} !!! {song_genius['songs'][i]['artist_names']}" )
+		if((	comparar_str_a_en_b(nueva_track, song_genius['songs'][i]['title']) == True) and 
+		   (	comparar_str_a_en_b(artista, song_genius['songs'][i]['artist_names']) == True)and
+		   (	basta == False)):
+			#print("hola")
 			dict_final = song_genius['songs'][i]
+			basta = True
 
-
+	#print(dict_final)
 	if(len(dict_final) != 0):
 		letra = genius.lyrics(song_id = dict_final['id'])
 		if(imprimir_pantalla == False):
@@ -53,16 +60,61 @@ def genius_funcion(nueva_track, imprimir_pantalla:bool) -> None:
 				letra_aux.write(letra)
 				letra_aux.close()
 		else:
-			print(letra)
+			return(letra)
 	else:
 		print("Nos se pudo encontrar la letra")
 
 def filtrar_string(nueva_track:str, basura:str):
+	final:str = nueva_track
 	basura = basura.lower()
 	nueva_track =  nueva_track.lower()
 	if(comparar_str_a_en_b(basura, nueva_track) == True):
-		nueva_track = nueva_track.replace(basura, "")
-	print(nueva_track)
+		final = nueva_track.replace(basura, "")
+	return final
+
+def filtrar_palabras_titulo(canal:str, cancion:str):
+	canal = filtrar_string(canal, "vevo")
+	canal = filtrar_string(canal, "official")
+	canal = filtrar_string(canal, "oficial")
+	canal = filtrar_string(canal, "channel")
+	canal = filtrar_string(canal, "canal")
+	canal = filtrar_string(canal, "(")
+	canal = filtrar_string(canal, ")")
+	canal = filtrar_string(canal, "-")
+
+	while("  " in canal):
+		canal = filtrar_string(canal, "  ")
+	while(canal[len(canal) - 1] == " "):
+		canal = canal[:-1]
+	while(canal[0] == " "):
+		canal = canal[1:]
+	while(canal[len(canal) - 1].isalnum() == False):
+		canal = canal[:-1]
+	while(canal[0].isalnum() == False):
+		canal = canal[1:]
+
+	cancion = filtrar_string(cancion, canal)
+	cancion = filtrar_string(cancion, "(")
+	cancion = filtrar_string(cancion, ")")
+	cancion = filtrar_string(cancion, "remastered")
+	cancion = filtrar_string(cancion, "video")
+	cancion = filtrar_string(cancion, "-")
+	cancion = filtrar_string(cancion, "official")
+	cancion = filtrar_string(cancion, "oficial")
+	for i in range(1900, 2022):
+		cancion = filtrar_string(cancion, str(i))
+	while(cancion[len(cancion) - 1] == " "):
+		cancion = cancion[:-1]
+	while(cancion[len(cancion) - 1].isalnum() == False):
+		cancion = cancion[:-1]
+	while(cancion[0] == " "):
+		cancion = cancion[1:]
+	while(cancion[0].isalnum() == False):
+		cancion = cancion[1:]
+	while("  " in cancion):
+		cancion = filtrar_string(cancion, " ")
+
+	return (cancion, canal)
 
 def Menu_Spotify() -> None:
 
@@ -110,7 +162,9 @@ def Menu_Spotify() -> None:
 			os.system("cls")
 
 			nueva_track = SP.buscar_sp(spotify)
-			genius_funcion(nueva_track, True)
+			
+			cancion, canal = filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
+			genius_funcion(cancion, canal, True)
 
 			playlist_agregar = SP.seleccionar_playlists(spotify)
 			SP.anadir_cancion(spotify, playlist_agregar, nueva_track)
@@ -190,15 +244,24 @@ def Menu_Youtube() -> None:
 
 		elif opcion =="3":
 			palabra = YT.buscar(youtube)
+			cancion, canal = filtrar_palabras_titulo(palabra['snippet']['channelTitle'], palabra['snippet']['title'])
 
-			filtrar_string(palabra['snippet']['title'], palabra['snippet']['channelTitle'])
+			genius_funcion(cancion, canal, True)
 
 			return
 
 		elif opcion == "4":
-			filtrar_string("The stroke VEVO", "VEvo")
-			filtrar_string("The killers official video", "official video")
-			filtrar_string("The killers (official video)", "(official video)")
+			canal:str= "System of a down VEVO (official channel)"
+			cancion = "Bohemian Rhapsody (Remastered 2011) system of a down" 
+			cancion, canal = filtrar_palabras_titulo(canal, cancion)
+
+			canal = canal.title()
+			cancion = cancion.title()
+
+			print(cancion)
+			print(canal)
+
+
 			return
 
 		elif opcion == "5": 
