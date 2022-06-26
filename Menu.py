@@ -29,7 +29,7 @@ def Menu_Spotify() -> None:
 			print(" Cambiar | Ingresara a Youtube")
 			print(" Salir | Cerrara el Programa")
 			print("_________________________")
-			opcion = input("Ingrese que decea: ")
+			opcion = input("Ingrese que desea: ")
 
 		if opcion == "1":
 
