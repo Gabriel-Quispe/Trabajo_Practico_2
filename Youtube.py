@@ -5,6 +5,7 @@ import os.path
 import os
 import json
 import csv
+from textwrap import indent
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -12,7 +13,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-
+#AIzaSyB618jeO2G8thgQTjiQnOR5mX6J1IaQQQ8
  
 #Son los permisos que se le pediran al usuario
 SCOPES = ['https://www.googleapis.com/auth/youtube',
@@ -152,26 +153,28 @@ def buscar(youtube : 'googleapiclient.discovery.Resource'):
 			q = palabra_clave,
 			maxResults = 5
 	).execute()
-
+	print("============================================================")
+	print("Resultados: ")
 	for i in range(len(resultado['items'])):
-		print(f" {i} - {resultado['items'][i]['snippet']['title']} - {resultado['items'][i]['snippet']['channelTitle']}")
+		print(f" {i} | {resultado['items'][i]['snippet']['title']} | {resultado['items'][i]['snippet']['channelTitle']}")
 
 	centinela:int = int(input("Seleccione una cancion: "))
 	while(centinela < 0 and centinela > len(resultado['items'])):
 		centinela = int(input("ERROR: Seleccione una cancion: "))
+		
+	#playlist_seleccionada = seleccionar_playlist_yt(youtube)
+	#print(json.dumps(resultado['items'][centinela], indent = 3))
 
-	playlist_seleccionada = seleccionar_playlist_yt(youtube)
+	return resultado['items'][centinela]
 
+def insertar_en_playlist_yt(youtube : 'googleapiclient.discovery.Resource', resultado, playlist_seleccionada):
 	youtube.playlistItems().insert(part = "snippet",
-		body = {
-			'snippet': {
-				'playlistId': playlist_seleccionada['id'],
-				'resourceId': {
-                      'kind': 'youtube#video',
-                  'videoId': resultado['items'][centinela]['id']['videoId']
+	body = {
+		'snippet': {
+			'playlistId': playlist_seleccionada['id'],
+			'resourceId': {
+					'kind': 'youtube#video',
+				'videoId': resultado['id']['videoId']
 			}
 		}
-	}
-		 ).execute()
-	#Listar_Playlist_Youtube( youtube)
-	return resultado['items'][centinela]
+	}).execute()

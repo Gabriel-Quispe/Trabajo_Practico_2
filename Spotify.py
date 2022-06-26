@@ -115,12 +115,10 @@ def buscar_sp(spotify: Spotify):
 	#al momento de añadir la cancion a la playlist tiene que ser una lista
 	return track[0].items[centinela]
 
-
 def anadir_cancion(spotify : Spotify, playlist_destino, track_a_agregar ) -> None:
 	#vas a la cancion-> tres puntitos -> compartit -> alt+ctrl ->copiar uri
 	uri_track_nueva = []
 	spotify.playlist_add(playlist_destino.id, [track_a_agregar.uri])
-
 
 def sincronizar_lista_spotify(spotify : Spotify) -> None:
 	print("Playlists en Spotify:")
