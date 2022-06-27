@@ -279,7 +279,7 @@ def Menu_Spotify() -> None:
 
 			nueva_track = SP.buscar_sp(spotify)
 			
-			cancion, canal = filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
+			canal, cancion = filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
 			genius_funcion(cancion, canal, True)
 
 			playlist_agregar = SP.seleccionar_playlists(spotify)
@@ -301,6 +301,7 @@ def Menu_Spotify() -> None:
 				canal = spotify.playlist_items(playlist_seleccionada.id).items[j].track.artists[0].name
 				cancion = spotify.playlist_items(playlist_seleccionada.id).items[j].track.name
 				canal, cancion = filtrar_palabras_titulo(canal, cancion)
+
 				letra = genius_funcion(cancion, canal, False)
 				letra = borrar_comentario(letra)
 				diccionario_de_palabras(repes, letra)

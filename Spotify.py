@@ -76,15 +76,18 @@ def Crear_Playlist_Spotify( spotify: Spotify) -> None:
 	#Crea la playlist con los datos dados
 	spotify.playlist_create(spotify.current_user().id, Nombre, public = True, description = Descripcion)
 
+def pedir_centinela_int(max:int):
+	centinela:int = int(input("Seleccione: "))
+	while(centinela < 0 and centinela > max):
+		centinela = int(input("ERROR: Seleccione nuevamente: "))
+	return centinela
+
 def seleccionar_playlists(spotify: Spotify):
 	print(f"Playlists en spotify de {spotify.user(spotify.current_user().id).display_name}:")
 	for i in range(spotify.playlists(spotify.current_user().id).total):
 		print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}")
 
-	centinela:int = int(input("Seleccione una lista: "))
-	while(centinela < 0 and centinela > spotify.playlists(spotify.current_user().id).total):
-		centinela = int(input("ERROR: Seleccione una lista: "))
-	
+	centinela:int = pedir_centinela_int(spotify.playlists(spotify.current_user().id).total)
 	#devuelvo el objeto entero despues se ulitiza .id .name .uri etc
 	return spotify.playlists(spotify.current_user().id).items[centinela]
 
@@ -102,10 +105,7 @@ def buscar_sp(spotify: Spotify):
 			for i in range(rango_busqueda):
 				print(f" {i} - nombre: {track[0].items[i].name}, artista: {track[0].items[i].artists[0].name}, album: {track[0].items[i].album.name}")
 			print("==========================================")
-
-			centinela = int(input("Ingrese cual cancion quiere añadir a la playlist o -1 para volver a buscar: "))
-			while(centinela < -1 or centinela > rango_busqueda):
-				centinela = int(input("ERROR: Ingrese cual cancion quiere añadir a la playlist o -1 para volver a buscar: "))
+			centinela:int = pedir_centinela_int(rango_busqueda)
 			if(centinela == -1):
 				aux = True
 			else:
@@ -125,9 +125,7 @@ def sincronizar_lista_spotify(spotify : Spotify) -> None:
 	for i in range(spotify.playlists(spotify.current_user().id).total):
 		print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}:")
 	
-	centinela = int(input("Ingrese que playlist quiere sincronizar: "))
-	while(centinela < 0 or centinela > spotify.playlists(spotify.current_user().id).total):
-		centinela = int(input("ERROR: Ingrese que playlist quiere sincronizar nuevamente: "))
+	centinela:int = pedir_centinela_int(spotify.playlists(spotify.current_user().id).total)
 
 	archivo = open("sync_sp.csv", "w", newline = "")
 	archivo.write(spotify.playlists(spotify.current_user().id).items[centinela].name + '\n')

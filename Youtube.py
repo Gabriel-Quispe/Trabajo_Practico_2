@@ -108,6 +108,12 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 	#Crea la playlist con los datos dados
 	youtube.playlists().insert(part = "snippet", body = dict(snippet = dict(title = Nombre, description = Descripcion))).execute()
 
+def pedir_centinela_int(max:int):
+	centinela = int(input("Seleccione: "))
+	while(centinela < 0 or centinela > max):
+		centinela = int(input("ERROR: Seleccione nuevamente: "))
+	return centinela
+
 def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') -> None:
 
 	os.system('cls')
@@ -117,14 +123,10 @@ def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') ->
 
 		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
 
-	centinela = int(input("Ingrese que playlist quiere sincronizar: "))
-
-	while(centinela < 0 or centinela > len(Info_playlist['items'])):
-		centinela = int(input("ERROR: Ingrese que playlist quiere sincronizar nuevamente: "))
+	centinela:int = pedir_centinela_int(len(Info_playlist['items']))
 
 	Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = Info_playlist['items'][centinela]['id'] , maxResults = 50).execute()
 	
-
 	archivo = open("sync_yt.csv", "w", newline = "")
 	archivo.write(Info_playlist['items'][centinela]['snippet']['title'] + '\n')
 	for i in range(Datos_playlist['pageInfo']['totalResults']):
@@ -140,9 +142,7 @@ def seleccionar_playlist_yt(youtube : 'googleapiclient.discovery.Resource'):
 	for playlists in range(len(Info_playlist['items'])):
 		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
 
-	centinela:int = int(input("Seleccione una lista: "))
-	while(centinela < 0 and centinela > len(Info_playlist['items'])):
-		centinela = int(input("ERROR: Seleccione una lista: "))
+	centinela:int = pedir_centinela_int(len(Info_playlist['items']))
 
 	return Info_playlist['items'][centinela]
 
@@ -155,15 +155,13 @@ def buscar(youtube : 'googleapiclient.discovery.Resource'):
 	).execute()
 	print("============================================================")
 	print("Resultados: ")
+
 	for i in range(len(resultado['items'])):
 		print(f" {i} | {resultado['items'][i]['snippet']['title']} | {resultado['items'][i]['snippet']['channelTitle']}")
 
-	centinela:int = int(input("Seleccione una cancion: "))
-	while(centinela < 0 and centinela > len(resultado['items'])):
-		centinela = int(input("ERROR: Seleccione una cancion: "))
+	centinela:int = pedir_centinela_int(len(resultado['items']))
 		
 	#playlist_seleccionada = seleccionar_playlist_yt(youtube)
-	#print(json.dumps(resultado['items'][centinela], indent = 3))
 
 	return resultado['items'][centinela]
 
