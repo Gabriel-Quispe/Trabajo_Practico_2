@@ -1,6 +1,11 @@
 from __future__ import print_function
+from ast import keyword
 
 import os.path
+import os
+import json
+import csv
+from textwrap import indent
 
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
@@ -8,7 +13,7 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
-import os
+#AIzaSyB618jeO2G8thgQTjiQnOR5mX6J1IaQQQ8
  
 #Son los permisos que se le pediran al usuario
 SCOPES = ['https://www.googleapis.com/auth/youtube',
@@ -77,13 +82,13 @@ def Listar_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) ->
 		print(Info_playlist['items'][playlists]['snippet']['title'])
 
 		#Obtiene los datos que contiene la playlist
-		Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = Info_playlist['items'][playlists]['id'] , maxResults = 50).execute()
-
-		#Ingresa a las canciones que contiene		
+		Datos_playlist = youtube.playlistItems().list(part = "snippet", playlistId = Info_playlist['items'][playlists]['id'] , maxResults = 50).execute()
+	
 		for j in range(Datos_playlist['pageInfo']['totalResults']):
 
 			#Imprime su titulo
 			print(f"	{Datos_playlist['items'][j]['snippet']['title']}")
+
 
 		print("-------------------------------")
 
@@ -102,3 +107,84 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 
 	#Crea la playlist con los datos dados
 	youtube.playlists().insert(part = "snippet", body = dict(snippet = dict(title = Nombre, description = Descripcion))).execute()
+
+#Pre: hace falta que max sea un int
+#Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
+#	   luego, una vez que esté  dentro del rango devuelve ese numero
+def pedir_centinela_int(max:int):
+	centinela = int(input("Seleccione: "))
+	while(centinela < 0 or centinela > max):
+		centinela = int(input("ERROR: Seleccione nuevamente: "))
+	return centinela
+
+
+def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') -> None:
+
+	os.system('cls')
+	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
+	print("Playlists en Youtube:")
+	for playlists in range(len(Info_playlist['items'])):
+
+		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
+
+	centinela:int = pedir_centinela_int(len(Info_playlist['items']))
+
+	Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = Info_playlist['items'][centinela]['id'] , maxResults = 50).execute()
+	
+	archivo = open("sync_yt.csv", "w", newline = "")
+	archivo.write(Info_playlist['items'][centinela]['snippet']['title'] + '\n')
+	for i in range(Datos_playlist['pageInfo']['totalResults']):
+		if(i != Datos_playlist['pageInfo']['totalResults'] - 1):
+			archivo.write(Datos_playlist['items'][i]['snippet']['title'] + ",")
+		else:
+			archivo.write(Datos_playlist['items'][i]['snippet']['title'])
+
+	archivo.close()
+
+#Pre: requiere que ya esté logueado en youtube
+#Post: le muestra al usuario todas las playlists que tiene y le da a elejir cual seleccionar, luego la devuelve
+def seleccionar_playlist_youtube(youtube : 'googleapiclient.discovery.Resource'):
+	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
+	for playlists in range(len(Info_playlist['items'])):
+		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
+
+	centinela:int = pedir_centinela_int(len(Info_playlist['items']))
+
+	return Info_playlist['items'][centinela]
+
+
+#Pre: requiere que ya esté logueado en youtube
+#Post: Pide al usuario una palabra clave y busca en youtube
+# 	   imprime los 5 resultados de youtube, le pide al usuario cual desea y devuelve el objeto cancion elejida por el usuario
+def buscar_youtube(youtube : 'googleapiclient.discovery.Resource'):
+	palabra_clave = input("Ingrese que desea buscar en youtube: ")
+	resultado = youtube.search().list(
+				part = "id,snippet",
+				q = palabra_clave,
+				maxResults = 5
+	).execute()
+
+	print("==========================================")
+	for i in range(len(resultado['items'])):
+		cancion:str = resultado['items'][i]['snippet']['title']
+		canal:str = resultado['items'][i]['snippet']['channelTitle']
+		print(f" {i} | {cancion} | {canal}")
+	
+	print("==========================================")
+	centinela:int = pedir_centinela_int(len(resultado['items']))
+		
+	return resultado['items'][centinela]
+
+#Pre: Estar logueado en youtube, el objeto cancion y el objeto playlist
+#Post: Agrega la cancion a la playlist
+def insertar_en_playlist_youtube(youtube : 'googleapiclient.discovery.Resource', resultado, playlist_seleccionada):
+	youtube.playlistItems().insert(part = "snippet",
+	body = {
+		'snippet': {
+			'playlistId': playlist_seleccionada['id'],
+			'resourceId': {
+					'kind': 'youtube#video',
+				'videoId': resultado['id']['videoId']
+			}
+		}
+	}).execute()
