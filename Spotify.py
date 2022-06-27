@@ -78,16 +78,17 @@ def Crear_Playlist_Spotify( spotify: Spotify) -> None:
 
 #Pre: hace falta que max sea un int
 #Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
-#luego, una vez que esté  dentro del rango devuelve ese numero
+#	   luego, una vez que esté  dentro del rango devuelve ese numero
 def pedir_centinela_int(max:int):
 	centinela:int = int(input("Seleccione: "))
 	while(centinela < 0 and centinela > max):
 		centinela = int(input("ERROR: Seleccione nuevamente: "))
+
 	return centinela
 
 #Pre: requiere que ya esté logueado en spotify
 #Post: le muestra al usuario todas las playlists que tiene y le da a elejir cual seleccionar, luego la devuelve
-def seleccionar_playlists(spotify: Spotify):
+def seleccionar_playlists_spotify(spotify: Spotify):
 	print(f"Playlists en spotify de {spotify.user(spotify.current_user().id).display_name}:")
 	for i in range(spotify.playlists(spotify.current_user().id).total):
 		print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}")
@@ -96,21 +97,27 @@ def seleccionar_playlists(spotify: Spotify):
 	#devuelvo el objeto entero despues se ulitiza .id .name .uri etc
 	return spotify.playlists(spotify.current_user().id).items[centinela]
 
-#pide al usuario una palabra clave y busca en spotify canciones 
-def buscar_sp(spotify: Spotify):
-	rango_busqueda = 5
-
-	buscador = input("ingrese que cancion quiere buscar: ")
+#Pre: Estar logueado en spotify 
+#Post: Pide al usuario una palabra clave y busca en spotify 
+# 	   imprime los 5 resultados de spotify, le pide al usuario cual desea y devuelve el objeto cancion elejida por el usuario
+def buscar_spotify(spotify: Spotify):
+	rango_busqueda:int = 5
+	buscador:str = input("ingrese que cancion quiere buscar: ")
 	track = spotify.search(buscador)
+	#track es una lista de los resultados devueltos por el search, oredeando por que tanto se asemeja la palabra clave
 	if(len(track[0].items) == 0):
 		print("no se encontro resultado")
+
 	else:
 		print("==========================================")
 		for i in range(rango_busqueda):
-			print(f" {i} - nombre: {track[0].items[i].name}, artista: {track[0].items[i].artists[0].name}, album: {track[0].items[i].album.name}")
+			cancion:str = track[0].items[i].name
+			artista:str = track[0].items[i].artists[0].name
+			album:str = track[0].items[i].album.name
+			print(f" {i} - nombre: {cancion}, artista: {artista}, album: {album}")
+
 		print("==========================================")
 		centinela:int = pedir_centinela_int(rango_busqueda)
-	
 		os.system("cls")
 
 	#al momento de añadir la cancion a la playlist tiene que ser una lista
@@ -118,15 +125,14 @@ def buscar_sp(spotify: Spotify):
 
 
 #Pre: Estar loguado, el objeto de playlist y de la cancion a agregar
-def anadir_cancion(spotify : Spotify, playlist_destino, track_a_agregar ) -> None:
+def insertar_en_playlist_spotify(spotify : Spotify, playlist_destino, track_a_agregar ) -> None:
 	#vas a la cancion-> tres puntitos -> compartit -> alt+ctrl ->copiar uri
-	uri_track_nueva = []
 	spotify.playlist_add(playlist_destino.id, [track_a_agregar.uri])
 
 def sincronizar_lista_spotify(spotify : Spotify) -> None:
 	print("Playlists en Spotify:")
 	for i in range(spotify.playlists(spotify.current_user().id).total):
-		print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}:")
+		print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}")
 	
 	centinela:int = pedir_centinela_int(spotify.playlists(spotify.current_user().id).total)
 

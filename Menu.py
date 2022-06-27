@@ -72,12 +72,6 @@ Nothing really matters to me
 Any way the wind blows679Embed
 """
 
-def comparar_str_a_en_b(a:str, b:str) -> bool:
-	a1:str = a.replace(" ","")
-	b1:str = b.replace(" ","")
-	if(a1.lower() in  b1.lower()):
-		return True
-	return False
 
 def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
 	archivo = open(nombre_archivo, "r")
@@ -86,7 +80,71 @@ def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
 	diccionario['lista_canciones'] = canciones_str.split(",")
 	archivo.close()
 
-def genius_funcion(nueva_track, artista, imprimir_pantalla:bool) -> None:
+#Pre:  Estar logueado en genius, el nombre de la cancion y el artista en string, y el bool de si se imprime en pantalla
+#Post: Busca en genius primero al artista y luego busca entre las canciones del artista la cancion pedida,
+# 	   para de esa manera evitar enviar una cancion que se llame igual pero se de otro artista,
+#      luego devuelve el objeto cancion
+def buscar_genius(nueva_track:str, artista:str, imprimir_pantalla:bool, genius):
+	genius_tack_artist = genius.search(artista, type_='artist')
+	if(len(genius_tack_artist['sections'][0]['hits']) == 0):
+		if(imprimir_pantalla == True):
+			print("No se encontró al artista")
+		return
+	export:int = 0
+	for i in range(len(genius_tack_artist['sections'][0]['hits'])):
+		if(genius_tack_artist['sections'][0]['hits'][i]['result']['name'].lower() == artista.lower()):
+			export = i
+	
+	song_genius = genius.search_artist_songs(	artist_id = genius_tack_artist['sections'][0]['hits'][export]['result']['id'], 
+												search_term = nueva_track,
+												per_page = 2, 
+												sort = artista )
+	return song_genius
+
+#Pre:  Estar logueado en genius, el nombre de la cancion y el artista en string
+#Post: Recorre la lista de resultados que mandó genius y compara cual es el que corrresponde con el nombre y artista
+#      luego guarda el diccionario del resultado y lo develve
+def filtrar_resultado_genius(nueva_track:str, artista:str, song_genius) -> dict:
+	dict_final:dict = {}
+	basta:bool = False
+	for i in range(len(song_genius['songs'])):
+		#print(f"{song_genius['songs'][i]['title']} !!! {song_genius['songs'][i]['artist_names']}" )
+		if((	comparar_str_a_en_b(nueva_track, song_genius['songs'][i]['title']) == True) and 
+		   (	comparar_str_a_en_b(artista, song_genius['songs'][i]['artist_names']) == True)and
+		   (	basta == False)):
+			dict_final = song_genius['songs'][i]
+			basta = True
+	return dict_final
+
+#Pre:  El diccinario con el resultado de genius e imprimir pantalla
+#Post: Con el dicionario de genius podemos buscar direcctamente la url de la cancion, se podria buscar por id
+#      pero nuestras pruebas muestran que la url es mas rápido, y en caso de encontrala la devuelve como string sino NULL
+def buscar_letra_url(dict_final:dict, imprimir_pantalla:bool, genius):
+	if(len(dict_final) != 0):
+		if(imprimir_pantalla == True):
+			print("Esto puede tradar.......")
+		#letra = genius.lyrics(song_id = dict_final['id'], per_page = 2)
+		letra = genius.lyrics(song_url = dict_final['url'])	
+		if(imprimir_pantalla == True):
+			print(letra)	
+		return(letra)
+	else:
+		if(imprimir_pantalla == True):
+			print("Nos se pudo encontrar la letra")
+	return None
+
+#Pre:  Recibe el artista, la cancion en string y un bool si hace falta imprimir
+#Post: la funcion buscar con la api de genius la letra de una cancion pedida y devuelve la letra 
+def genius_total(artista:str, nueva_track:str, imprimir_pantalla:bool):
+	genius = lyricsgenius.Genius(CLIENTE_ACCESS_TOKE_GENIUS)
+	song_genius = buscar_genius(nueva_track, artista, imprimir_pantalla)
+	resultado: dict = filtrar_resultado_genius(nueva_track, artista, song_genius)
+	letra = buscar_letra_url(resultado, imprimir_pantalla)
+	letra = borrar_comentario(letra)
+	return letra
+
+#reemplazada
+def genius_funcion(nueva_track:str, artista:str, imprimir_pantalla:bool) -> None:
 	genius = lyricsgenius.Genius(CLIENTE_ACCESS_TOKE_GENIUS)
 	genius_tack_artist = genius.search(artista.title(), type_='artist')
 	if(len(genius_tack_artist['sections'][0]['hits']) == 0):
@@ -103,9 +161,10 @@ def genius_funcion(nueva_track, artista, imprimir_pantalla:bool) -> None:
 												per_page = 2, 
 												sort = artista )
 
+
+
 	dict_final:dict = {}
 	basta = False
-	
 	for i in range(len(song_genius['songs'])):
 		#print(f"{song_genius['songs'][i]['title']} !!! {song_genius['songs'][i]['artist_names']}" )
 		if((	comparar_str_a_en_b(nueva_track, song_genius['songs'][i]['title']) == True) and 
@@ -113,6 +172,7 @@ def genius_funcion(nueva_track, artista, imprimir_pantalla:bool) -> None:
 		   (	basta == False)):
 			dict_final = song_genius['songs'][i]
 			basta = True
+
 	if(imprimir_pantalla == True):
 		print("Esto puede tradar.......")
 	if(len(dict_final) != 0):
@@ -126,21 +186,38 @@ def genius_funcion(nueva_track, artista, imprimir_pantalla:bool) -> None:
 			print("Nos se pudo encontrar la letra")
 	return None
 
+#Pre:  que ambas variables seans strings
+#Post: La funcion compara si a se encuentra dentro de b, devuelve True si es ese el caso o False de lo contrario
+def comparar_str_a_en_b(a:str, b:str) -> bool:
+	a1:str = a.replace(" ","")
+	b1:str = b.replace(" ","")
+	if(a1.lower() in  b1.lower()):
+		return True
+	return False
+
+#Pre:  Recibe dos strings
+#Post: Si la duncion encuentra basura en nueva track, la borra, luego devuelve el string modificado, 
+# 	   si no encuentra nada lo devuelve como lo recibió
 def filtrar_string(nueva_track:str, basura:str):
 	final:str = nueva_track
-	basura = basura.lower()
+	basura:str = basura.lower()
 	nueva_track =  nueva_track.lower()
 	if(comparar_str_a_en_b(basura, nueva_track) == True):
 		final = nueva_track.replace(basura, "")
 	return final
 
+#Pre:  Recibe dos string, uno del artista, y la cancion
+#Post: la funcion filtra palabras que podrian aparecer en ambos string las cuales perjudicarian el programa
+#      al momento de compara string, esto se encuentra m,çucho mas presente en youtube, 
+#      pero tambien lo aplicamosa para spotify
 def filtrar_palabras_titulo(canal:str, cancion:str):
-
 	canal = filtrar_string(canal, "vevo")
 	canal = filtrar_string(canal, "official")
 	canal = filtrar_string(canal, "oficial")
 	canal = filtrar_string(canal, "channel")
 	canal = filtrar_string(canal, "canal")
+	canal = filtrar_string(canal, "music")
+	canal = filtrar_string(canal, "musica")
 	canal = filtrar_string(canal, "(")
 	canal = filtrar_string(canal, ")")
 	canal = filtrar_string(canal, "-")
@@ -179,6 +256,7 @@ def filtrar_palabras_titulo(canal:str, cancion:str):
 	cancion = filtrar_string(cancion, "oficial")
 	cancion = filtrar_string(cancion, "lyrics")
 	cancion = filtrar_string(cancion, "con letra")
+	cancion = filtrar_string(cancion, "español")
 	for i in range(1900, 2022):
 		cancion = filtrar_string(cancion, str(i))
 	while(cancion[len(cancion) - 1] == " "):
@@ -195,6 +273,8 @@ def filtrar_palabras_titulo(canal:str, cancion:str):
 
 	return (canal, cancion)
 
+#Pre:  Recibe el string de la letra de la cancion
+#Post: La funcion borra los comentarios que pone genius en la letra como la numeracion de versos
 def borrar_comentario(letra:str) -> str:
 	if(letra == None):
 		return None
@@ -207,6 +287,12 @@ def borrar_comentario(letra:str) -> str:
 	letra = letra[0: len(letra) - 8]
 	return letra
 
+#Pre:  Recibe un dicciorio que tiene como claves las palabras y valor la cantidad de veces que se dice 
+#      hace falta que el diccionario esté creado pero no pasa nada si está vacio
+#Post: La funcion primero reemplaza algunos de los caracretes mas comunes lso cuales se encuentran inmediatamnte
+#      al lado de la plabra por lo que al momento de hacer split con espacio puede haber errores al momento de comaprar
+#      por ejemplo "casa" y "casa," las tomaria como dos pàlabras diferentes.
+#      Luego las separa y mete en el diccionario dado.
 def diccionario_de_palabras(dicc:dict, letra:str):
 	if(letra == None):
 		return
@@ -233,21 +319,15 @@ def diccionario_de_palabras(dicc:dict, letra:str):
 				dicc[lista_palabras[i]] = 1
 
 def Menu_Spotify() -> None:
-
 	Iterable = 0
 
 	while Iterable == 0 :
-
 		os.system("cls")
-
 		opcion = str()
-
 		spotify = SP.Generar_Servicio_Spotify()
 
 		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
-
 			os.system("cls")
-
 			print("Menu de Spotify:")
 			print("------------------------------")
 			print(" 1 | Listar Playlist ")
@@ -262,37 +342,36 @@ def Menu_Spotify() -> None:
 			opcion = input("Ingrese que decea: ")
 
 		if opcion == "1":
-
 			os.system("cls")
 			SP.Listar_Playlist_Spotify( spotify )
 
 			input()
 
 		elif opcion == "2":
-
 			os.system("cls")
-
 			SP.Crear_Playlist_Spotify( spotify )
 
 		elif opcion =="3":
 			os.system("cls")
 
-			nueva_track = SP.buscar_sp(spotify)
-			
+			nueva_track = SP.buscar_spotify(spotify)
 			canal, cancion = filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
-			genius_funcion(cancion, canal, True)
+			#genius_funcion(cancion, canal, True)
 
-			playlist_agregar = SP.seleccionar_playlists(spotify)
-			SP.anadir_cancion(spotify, playlist_agregar, nueva_track)
+			playlist_agregar = SP.seleccionar_playlists_spotify(spotify)
+			SP.insertar_en_playlist_spotify(spotify, playlist_agregar, nueva_track)
 
-			letra = genius_funcion(cancion, canal, True)
-			letra = borrar_comentario(letra)
+			letra = genius_total(canal, cancion, True)
+			
+			#letra = genius_funcion(cancion, canal, True)
+			#letra = borrar_comentario(letra)
 
 			os.system("cls")
 			print(letra)
 			return
 
 		elif opcion == "4":
+
 			os.system("cls")
 			repes = {}
 			playlist_seleccionada = SP.seleccionar_playlists(spotify)
@@ -326,35 +405,26 @@ def Menu_Spotify() -> None:
 			return
 
 		elif opcion == "6":
-
 			return
 
 		if opcion == "Salir":
-
 			Iterable = 1
 
 		if opcion == "Cambiar":
-
 			Menu_Youtube()
 
 			Iterable = 1
 
 def Menu_Youtube() -> None:
-
 	Iterable = 0
 
 	while Iterable == 0 :
-
 		os.system("cls")
-
 		opcion = str()
-
 		youtube = YT.Generar_Servicios_Youtube()
 
 		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
-
 			os.system("cls")
-
 			print("Menu de Youtube:")
 			print("------------------------------")
 			print(" 1 | Listar Playlist ")
@@ -369,9 +439,7 @@ def Menu_Youtube() -> None:
 			opcion = input("Ingrese que decea: ")
 
 		if opcion == "1":
-
 			os.system("cls")
-
 			YT.Listar_Playlist_Youtube( youtube )
 
 			input()
@@ -383,16 +451,15 @@ def Menu_Youtube() -> None:
 
 		elif opcion =="3":
 			palabra = YT.buscar(youtube)
-			playlist_seleccionada = YT.seleccionar_playlist_yt(youtube)
-			YT.insertar_en_playlist_yt(youtube, palabra, playlist_seleccionada)
+			playlist_seleccionada = YT.seleccionar_playlist_youtube(youtube)
+			YT.insertar_en_playlist_youtube(youtube, palabra, playlist_seleccionada)
 
 			canal, cancion = filtrar_palabras_titulo(palabra['snippet']['channelTitle'], palabra['snippet']['title'])
-			letra = genius_funcion(cancion, canal, True)
-			letra = borrar_comentario(letra)
+
+			letra = genius_total(canal, cancion, True)
 
 			os.system("cls")
 			print(letra)
-
 			return
 
 		elif opcion == "4":
@@ -451,23 +518,17 @@ def main() -> None:
 	Programa = str()
 
 	while Programa != "Youtube" and Programa != "Spotify" and Programa != "SALIR" and Programa != "y" and Programa != "s":
-
 		print("Bienvendio su Aplicacion de Control de Playlist")
-
 		Programa = input("Seleccione: | Youtube | o | Spotify | o | SALIR |: ")
-
 		os.system("cls")
 
 	if Programa == "Spotify" or Programa == "s":
-
 		Menu_Spotify()
 
 	elif Programa == "Youtube" or Programa == "y":				
-
 		Menu_Youtube()
 
 	else:
-
 		print("Gracias, vuelva pronto")
 
 main()
