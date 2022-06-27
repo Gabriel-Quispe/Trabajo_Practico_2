@@ -61,6 +61,25 @@ def Listar_Playlist_Spotify( spotify : Spotify) -> None:
 
 		print("-------------------------------")
 
+def lista(spotify : Spotify)->list:
+
+	lista_playlist:list = []
+
+	for i in range(spotify.playlists(spotify.current_user().id).total):
+		playlist:dict = {
+			"nombre_playlist":"",
+			"lista_canciones":[]
+		}
+		playlist["nombre_playlist"] = spotify.playlists(spotify.current_user().id).items[i].name
+
+		for j in range(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).total):
+			playlist["lista_canciones"].append(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[j].track.name)
+
+		lista_playlist.append(playlist)
+
+	return lista_playlist	
+	
+
 #Crea una playlist para una cuenta de spotify
 def Crear_Playlist_Spotify( spotify: Spotify) -> None:
 	

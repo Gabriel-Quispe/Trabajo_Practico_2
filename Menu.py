@@ -1,6 +1,8 @@
 from os import system
 import Youtube as YT
 import Spotify as SP
+from sincronizar import sincronizar
+
 
 def Menu_Spotify() -> None:
 
@@ -13,6 +15,7 @@ def Menu_Spotify() -> None:
 		opcion = str()
 
 		spotify = SP.Generar_Servicio_Spotify()
+		youtube = YT.Generar_Servicios_Youtube()
 
 		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
 
@@ -54,7 +57,12 @@ def Menu_Spotify() -> None:
 			return
 
 		elif opcion == "5":
-
+			system("clear")
+			print(" Lista de PlayList ")
+			print("------------------------------")
+			print()
+			nombre_playlist:str = input("Ingresar el nombre de la playlist que desea sincronizar: ")
+			sincronizar.sincronizar_playlist(nombre_playlist, SP.lista(spotify), youtube)
 			return
 
 		elif opcion == "6":
