@@ -143,7 +143,7 @@ def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') ->
 
 #Pre: requiere que ya esté logueado en youtube
 #Post: le muestra al usuario todas las playlists que tiene y le da a elejir cual seleccionar, luego la devuelve
-def seleccionar_playlist_yt(youtube : 'googleapiclient.discovery.Resource'):
+def seleccionar_playlist_youtube(youtube : 'googleapiclient.discovery.Resource'):
 	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
 	for playlists in range(len(Info_playlist['items'])):
 		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
