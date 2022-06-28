@@ -1,10 +1,9 @@
-#from os import systeminstall
-import lyricsgenius
 import os
-import Youtube as YT
-import Spotify as SP
 import genius
 import filtro
+import wordcloud
+import Youtube as YT
+import Spotify as SP
 import csv
 import json
 
@@ -74,20 +73,31 @@ def Menu_Spotify() -> None:
 
 			os.system("cls")
 			repes = {}
-			playlist_seleccionada = SP.seleccionar_playlists(spotify)
+			playlist_seleccionada = SP.seleccionar_playlists_spotify(spotify)
 			print("Esto puede tradar.......")
 			for j in range(spotify.playlist_items(playlist_seleccionada.id).total):
 				canal = spotify.playlist_items(playlist_seleccionada.id).items[j].track.artists[0].name
 				cancion = spotify.playlist_items(playlist_seleccionada.id).items[j].track.name
 				canal, cancion = filtro.filtrar_palabras_titulo(canal, cancion)
 
-				letra = genius.genius_total(canal, cancion, True)
+				letra = genius.genius_total(canal, cancion, False)
 				filtro.diccionario_de_palabras(repes, letra)
 
 				os.system("cls")
 				print(f"letras calculadas {j} / {spotify.playlist_items(playlist_seleccionada.id).total}")
 
-			dic_a_lista:list = filtro.convertir_diccionario(dic_a_lista)
+			dic_a_lista:list = filtro.convertir_diccionario(repes)
+			lista_cloud = []
+			for i in range(len(dic_a_lista)):
+				lista_cloud.append(str(dic_a_lista[i][0]))
+
+
+			text = " ".join(lista_cloud)
+			#borra las palabras comunes como articulos y pronombres
+			wordcloud2 = wordcloud.WordCloud(stopwords = None, max_words = 10).generate(text)
+			wordcloud2.to_file("cloud.png")
+
+
 			return
 
 		elif opcion == "5":
@@ -100,6 +110,11 @@ def Menu_Spotify() -> None:
 			return
 
 		elif opcion == "6":
+			lista = ["hola", "chau", "fede", "fur", "pete"]
+			text = " ".join(lista)
+			wordcloud2 = wordcloud.WordCloud().generate(text)
+			wordcloud2.to_file("cloud.png")
+
 			return
 
 		if opcion == "Salir":
@@ -159,12 +174,21 @@ def Menu_Youtube() -> None:
 				cancion = Datos_playlist['items'][j]['snippet']['title']
 				canal, cancion = filtro.filtrar_palabras_titulo(canal, cancion)
 
-				letra = genius.genius_total(canal, cancion, True)
+				letra = genius.genius_total(canal, cancion, False)
 				filtro.diccionario_de_palabras(repes, letra)
 				os.system("cls")
 				print(f"letras calculadas {j} / {Datos_playlist['pageInfo']['totalResults']}")
 
-			dic_a_lista:list = filtro.convertir_diccionario(dic_a_lista)
+			
+			dic_a_lista:list = filtro.convertir_diccionario(repes)
+			lista_cloud = []
+			for i in range(len(dic_a_lista)):
+				lista_cloud.append(str(dic_a_lista[i][0]))
+
+			text = " ".join(lista_cloud)
+			#borra las palabras comunes como articulos y pronombres
+			wordcloud2 = wordcloud.WordCloud(stopwords = None, max_words = 10).generate(text)
+			wordcloud2.to_file("cloud.png")
 			return
 
 		elif opcion == "5": 
