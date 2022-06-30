@@ -93,20 +93,23 @@ def listar_playlist(youtube : 'googleapiclient.discovery.Resource')->list:
     """
 
     #Obtiene la informacion de todas las playlist del usuario
-    info_playlist:any = youtube.playlists().list( part="snippet", mine=True).execute()
-    lista_playlist:list = []
+    info_playlist: any = youtube.playlists().list( part="snippet", mine=True).execute()
+    lista_playlist: list = []
 
     #Ingresa a las playlist
     for playlists in range(len(info_playlist['items'])):
 
-        playlist:dict = definir_playlist()
+        playlist: dict = definir_playlist()
         playlist["id"] = info_playlist['items'][playlists]['id']
         playlist["nombre_playlist"] = info_playlist['items'][playlists]['snippet']['title']
+        playlist["descripcion"] = info_playlist['items'][playlists]['snippet']['description']
+
         datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = info_playlist['items'][playlists]['id'] , maxResults = 50).execute()
 
         for j in range(datos_playlist['pageInfo']['totalResults']):
             playlist["lista_canciones"].append(datos_playlist['items'][j]['snippet']['title'])
 
+        playlist["cantidad_canciones"] = len(playlist["lista_canciones"])
         lista_playlist.append(playlist)
 
     return lista_playlist

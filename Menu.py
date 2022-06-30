@@ -6,8 +6,10 @@ import Spotify as SP
 import Youtube as YT
 import filtro
 import genius
+from playlist.playlist import buscar_playlist
 from sincronizar import sincronizar_spotify, sincronizar_youtube
-from vistas.vista_playlist import imprimir_lista_playlist
+from vistas.vista_playlist import imprimir_lista_playlist, imprimir_titulos_playlist
+from exportar_playlist import exportar_playlist
 
 
 def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
@@ -31,8 +33,12 @@ def imprtimir_menu():
 
 def Menu_Spotify() -> None:
     Iterable = 0
-    spotify = SP.Generar_Servicio_Spotify()
-    youtube = YT.Generar_Servicios_Youtube()
+    try:
+        spotify = SP.Generar_Servicio_Spotify()
+        youtube = YT.Generar_Servicios_Youtube()
+    except Exception:
+        print(" Error en conexion de plataformas")
+        return
 
     while Iterable == 0 :
         os.system("cls")
@@ -113,7 +119,7 @@ def Menu_Spotify() -> None:
 
             lista_playlist_spotify: list = SP.listar_playlist(spotify)
             lista_playlist_youtube: list = YT.listar_playlist(youtube)
-            imprimir_lista_playlist(lista_playlist_spotify)
+            imprimir_titulos_playlist(lista_playlist_spotify)
             print()
             print("------------------------------")
             nombre_playlist: str = input("Ingresar el nombre de la playlist que desea sincronizar: ")
@@ -122,14 +128,19 @@ def Menu_Spotify() -> None:
                                                      youtube)
             return
         elif opcion == "6":
-            return
-
-        elif opcion == "6":
-            lista = ["hola", "chau", "fede", "fur", "pete"]
-            text = " ".join(lista)
-            wordcloud2 = wordcloud.WordCloud().generate(text)
-            wordcloud2.to_file("cloud.png")
-
+            os.system("clear")
+            print(" Lista de PlayList ")
+            print("------------------------------")
+            print()
+            try:
+                lista_playlist_csv: list = SP.listar_playlist(spotify)
+                imprimir_titulos_playlist(lista_playlist_csv)
+                print()
+                nombre_de_la_playlist: str = input("Escriba el nombre de la playlist a exportar: ")
+                playlist: dict = buscar_playlist(nombre_de_la_playlist, lista_playlist_csv)
+                exportar_playlist.exportar(playlist, 'spotify')
+            except Exception:
+                print("error en conexion de spotify")
             return
 
         if opcion == "Salir":
@@ -182,7 +193,7 @@ def Menu_Youtube() -> None:
         elif opcion == "4":
             os.system("cls")
             repes = {}
-            playlist_seleccionada = YT.seleccionar_playlist_yt(youtube)
+            playlist_seleccionada = YT.seleccionar_playlist_youtube(youtube)
             Datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = playlist_seleccionada['id'] , maxResults = 50).execute()
             print("Esto puede tradar.......")
             for j in range(Datos_playlist['pageInfo']['totalResults']):
@@ -216,19 +227,27 @@ def Menu_Youtube() -> None:
 
             lista_playlist_spotify: list = SP.listar_playlist(spotify)
             lista_playlist_youtube: list = YT.listar_playlist(youtube)
-            imprimir_lista_playlist(lista_playlist_youtube)
+            imprimir_titulos_playlist(lista_playlist_youtube)
 
             print()
             print("------------------------------")
             nombre_playlist: str = input("Ingresar el nombre de la playlist que desea sincronizar: ")
-            # SP.buscar_cancion(spotify, "As it was")
             sincronizar_youtube.sincronizar_playlist(nombre_playlist, lista_playlist_spotify, lista_playlist_youtube,
                                                      spotify)
             return
 
 
         elif opcion == "6":
-
+            os.system("clear")
+            print(" Lista de PlayList ")
+            print("------------------------------")
+            print()
+            lista_playlist_csv: list = YT.listar_playlist(youtube)
+            imprimir_titulos_playlist(lista_playlist_csv)
+            print()
+            nombre_de_la_playlist: str = input("Escriba el nombre de la playlist a exportar: ")
+            playlist: dict = buscar_playlist(nombre_de_la_playlist, lista_playlist_csv)
+            exportar_playlist.exportar(playlist, 'youtube')
             return
 
         if opcion == "Salir":

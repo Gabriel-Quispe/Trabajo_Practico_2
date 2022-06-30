@@ -3,17 +3,12 @@ import tekore as tk
 from tekore import RefreshingToken
 from tekore import Spotify
 
+from credenciales.spotify import spotify_credenciales
 from playlist.playlist import definir_playlist
 
-# Estos datos se obtienen en "https://developer.spotify.com/dashboard/login"
-# solo creen una aplicacion con una cuenta de spotify y tendran
-# arriba a la derecha acceso a estos datos
-CLIENT_ID = '56aa6d858d4041b9bdf3a30facecd839'
-CLIENT_SECRET = '71825c90b8aa464985acfe7e51822cd5'
-
-# En el apartado de "EDIT SETTINGS" ingresen
-# en "Redirect URIs" esta URL:
-URL = "https://example.com/callback"
+CLIENT_ID = spotify_credenciales.CLIENT_ID_GABRIEL
+CLIENT_SECRET = spotify_credenciales.CLIENT_ID_GABRIEL
+URL = spotify_credenciales.URL
 
 
 # Permite acceder a los servicios de la API de spotify
@@ -27,16 +22,16 @@ def Generar_Servicio_Spotify() -> Spotify:
     configuracion = (CLIENT_ID, CLIENT_SECRET, URL)
 
     # Si existe el archivo con el token, lo refresca ("actualiza") y lo utiliza
-    if os.path.exists('tekore.cfg'):
+    if os.path.exists(spotify_credenciales.TOKERE_GABRIEL):
 
-        configuracion: tuple = tk.config_from_file('tekore.cfg', return_refresh=True)
+        configuracion: tuple = tk.config_from_file(spotify_credenciales.TOKERE_GABRIEL, return_refresh=True)
         token = tk.refresh_user_token(*configuracion[:2], configuracion[3])
 
     # Si no existe lo crea
     elif (not token == True):
 
         token = tk.prompt_for_user_token(*configuracion, scope=tk.scope.every)
-        tk.config_to_file('tekore.cfg', configuracion + (token.refresh_token,))
+        tk.config_to_file(spotify_credenciales.TOKERE_GABRIEL, configuracion + (token.refresh_token,))
 
     # Utiliza el token y retorna el acceso a la API de spotify
     return tk.Spotify(token)
@@ -77,11 +72,20 @@ def listar_playlist(spotify: Spotify) -> list:
         playlist: dict = definir_playlist()
         playlist["id"] = spotify.playlists(spotify.current_user().id).items[i].id
         playlist["nombre_playlist"] = spotify.playlists(spotify.current_user().id).items[i].name
+        playlist["descripcion"] = spotify.playlists(spotify.current_user().id).items[i].description
+        playlist["creador_playlist"] = spotify.playlists(spotify.current_user().id).items[i].owner.display_name
+        playlist["tipo_playlist"] = spotify.playlists(spotify.current_user().id).items[i].public
+        playlist["url"] = spotify.playlists(spotify.current_user().id).items[i].owner.external_urls["spotify"]
 
         for j in range(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).total):
+            playlist["duracion_playlist"] = spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[j].track.duration_ms + playlist["duracion_playlist"]
+            playlist["listar_artistas"].append(
+                spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[j].track.artists[0].name
+            )
             playlist["lista_canciones"].append(
                 spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[j].track.name)
 
+        playlist["cantidad_canciones"] = len(playlist["lista_canciones"])
         lista_playlist.append(playlist)
 
     return lista_playlist
@@ -182,13 +186,17 @@ def sincronizar_lista_spotify(spotify: Spotify) -> None:
 
 def crear_playlist(spotify: Spotify, nombre_playlist: str) -> None:
     """
-    Precondicion: Inicializar el objeto spotify y el nombre de la playlist que quiere crear
+    Precondicion: Inicializar el objeto spotify y tener el nombre de la playlist que quiere crear
     Poscondicion: None
     """
     spotify.playlist_create(spotify.current_user().id, nombre_playlist, public=True, description="musica")
 
 
 def buscar_cancion(spotify: Spotify, cancion: str):
+    """
+        Precondicion: Inicializar el objeto spotify y tener el  nombre de la playlist que quiere buscar
+        Poscondicion: Devuelve la lista de url si exite la cancion en caso contrario devuelve -1
+        """
     RANGO_CANCIONES: int = 5
     track = spotify.search(cancion)
 

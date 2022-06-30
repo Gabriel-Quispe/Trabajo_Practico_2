@@ -10,9 +10,11 @@ def sincronizar_playlist(nombre_playlist: str, lista_playlist_spotify: list, lis
     archivo = open("canciones_no_existen_en_youtube.csv", "w", newline="")
 
     if (not esta_presente_playlist_en_la_lista(nombre_playlist, lista_playlist_youtube)):
+
         YT.crear_playlist(youtube, nombre_playlist)
         playlist_youtube: dict = buscar_playlist(nombre_playlist, YT.listar_playlist(youtube))
         playlist_spotify: dict = buscar_playlist(nombre_playlist, lista_playlist_spotify)
+
         for cancion in playlist_spotify["lista_canciones"]:
             id_cancion = YT.buscar_cancion(youtube, cancion)
             if id_cancion != -1:
