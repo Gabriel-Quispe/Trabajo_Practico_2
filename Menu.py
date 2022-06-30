@@ -1,175 +1,194 @@
 from os import system
 import Youtube as YT
 import Spotify as SP
-from sincronizar import sincronizar
+from sincronizar import sincronizar_spotify, sincronizar_youtube
+from vistas.vista_playlist import imprimir_lista_playlist
 
 
 def Menu_Spotify() -> None:
+    Iterable = 0
 
-	Iterable = 0
+    while Iterable == 0:
 
-	while Iterable == 0 :
+        system("cls")
 
-		system("cls")
+        opcion = str()
 
-		opcion = str()
+        spotify = SP.Generar_Servicio_Spotify()
+        youtube = YT.Generar_Servicios_Youtube()
 
-		spotify = SP.Generar_Servicio_Spotify()
-		youtube = YT.Generar_Servicios_Youtube()
+        while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar":
+            system("cls")
 
-		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
+            print("Menu de Spotify:")
+            print("------------------------------")
+            print(" 1 | Listar Playlist ")
+            print(" 2 | Crear Playlist ")
+            print(" 3 | Añadir a Playlist ")
+            print(" 4 | Analizar Playlist")
+            print(" 5 | Sincronizar Playlist")
+            print(" 6 | Exportar Playlist ")
+            print(" Cambiar | Ingresara a Youtube")
+            print(" Salir | Cerrara el Programa")
+            print("_________________________")
+            opcion = input("Ingrese que decea: ")
 
-			system("cls")
+        if opcion == "1":
 
-			print("Menu de Spotify:")
-			print("------------------------------")
-			print(" 1 | Listar Playlist ")
-			print(" 2 | Crear Playlist ")
-			print(" 3 | Añadir a Playlist ")
-			print(" 4 | Analizar Playlist")
-			print(" 5 | Sincronizar Playlist")
-			print(" 6 | Exportar Playlist ")	
-			print(" Cambiar | Ingresara a Youtube")
-			print(" Salir | Cerrara el Programa")
-			print("_________________________")
-			opcion = input("Ingrese que decea: ")
+            system("cls")
 
-		if opcion == "1":
+            SP.Listar_Playlist_Spotify(spotify)
 
-			system("cls")
+            input()
 
-			SP.Listar_Playlist_Spotify( spotify )
+        elif opcion == "2":
 
-			input()
+            system("cls")
 
-		elif opcion == "2":
+            SP.Crear_Playlist_Spotify(spotify)
 
-			system("cls")
+        elif opcion == "3":
 
-			SP.Crear_Playlist_Spotify( spotify )
+            return
 
-		elif opcion =="3":
+        elif opcion == "4":
 
-			return
+            return
 
-		elif opcion == "4":
+        elif opcion == "5":
 
-			return
+            system("clear")
+            print(" Lista de PlayList ")
+            print("------------------------------")
+            print()
 
-		elif opcion == "5":
-			system("clear")
-			print(" Lista de PlayList ")
-			print("------------------------------")
-			print()
-			nombre_playlist:str = input("Ingresar el nombre de la playlist que desea sincronizar: ")
-			sincronizar.sincronizar_playlist(nombre_playlist, SP.lista(spotify), youtube)
-			return
+            lista_playlist_spotify: list = SP.listar_playlist(spotify)
+            lista_playlist_youtube: list = YT.listar_playlist(youtube)
+            imprimir_lista_playlist(lista_playlist_spotify)
+            print()
+            print("------------------------------")
+            nombre_playlist: str = input("Ingresar el nombre de la playlist que desea sincronizar: ")
 
-		elif opcion == "6":
+            sincronizar_spotify.sincronizar_playlist(nombre_playlist, lista_playlist_spotify, lista_playlist_youtube,
+                                                     youtube)
+            return
+        elif opcion == "6":
 
-			return
+            return
 
-		if opcion == "Salir":
+        if opcion == "Salir":
+            Iterable = 1
 
-			Iterable = 1
+        if opcion == "Cambiar":
+            Menu_Youtube()
 
-		if opcion == "Cambiar":
+            Iterable = 1
 
-			Menu_Youtube()
-
-			Iterable = 1
 
 def Menu_Youtube() -> None:
+    Iterable = 0
+    spotify = SP.Generar_Servicio_Spotify()
+    youtube = YT.Generar_Servicios_Youtube()
 
-	Iterable = 0
+    while Iterable == 0:
 
-	while Iterable == 0 :
+        system("cls")
 
-		system("cls")
+        opcion = str()
 
-		opcion = str()
+        youtube = YT.Generar_Servicios_Youtube()
 
-		youtube = YT.Generar_Servicios_Youtube()
+        while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar":
+            system("cls")
 
-		while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
+            print("Menu de Youtube:")
+            print("------------------------------")
+            print(" 1 | Listar Playlist ")
+            print(" 2 | Crear Playlist ")
+            print(" 3 | Añadir a Playlist ")
+            print(" 4 | Analizar Playlist")
+            print(" 5 | Sincronizar Playlist")
+            print(" 6 | Exportar Playlist ")
+            print(" Cambiar | Ingresara a Spotify")
+            print(" Salir | Cerrara el Programa")
+            print("_________________________")
+            opcion = input("Ingrese que decea: ")
 
-			system("cls")
+        if opcion == "1":
 
-			print("Menu de Youtube:")
-			print("------------------------------")
-			print(" 1 | Listar Playlist ")
-			print(" 2 | Crear Playlist ")
-			print(" 3 | Añadir a Playlist ")
-			print(" 4 | Analizar Playlist")
-			print(" 5 | Sincronizar Playlist")
-			print(" 6 | Exportar Playlist ")	
-			print(" Cambiar | Ingresara a Spotify")	
-			print(" Salir | Cerrara el Programa")
-			print("_________________________")
-			opcion = input("Ingrese que decea: ")
+            system("cls")
 
-		if opcion == "1":
+            YT.Listar_Playlist_Youtube(youtube)
 
-			system("cls")
+            input()
 
-			YT.Listar_Playlist_Youtube( youtube )
+        elif opcion == "2":
 
-			input()
+            system("cls")
 
-		elif opcion == "2":
+            YT.Crear_Playlist_Youtube(youtube)
 
-			system("cls")
+        elif opcion == "3":
 
-			YT.Crear_Playlist_Youtube( youtube )
+            return
 
-		elif opcion =="3":
+        elif opcion == "4":
 
-			return
+            return
 
-		elif opcion == "4":
+        elif opcion == "5":
 
-			return
+            system("clear")
+            print(" Lista de PlayList ")
+            print("------------------------------")
+            print()
 
-		elif opcion == "5":
+            lista_playlist_spotify: list = SP.listar_playlist(spotify)
+            lista_playlist_youtube: list = YT.listar_playlist(youtube)
+            imprimir_lista_playlist(lista_playlist_youtube)
 
-			return
+            print()
+            print("------------------------------")
+            nombre_playlist: str = input("Ingresar el nombre de la playlist que desea sincronizar: ")
+            # SP.buscar_cancion(spotify, "As it was")
+            sincronizar_youtube.sincronizar_playlist(nombre_playlist, lista_playlist_spotify, lista_playlist_youtube,
+                                                     spotify)
+            return
 
-		elif opcion == "6":
+        elif opcion == "6":
 
-			return
+            return
 
-		if opcion == "Salir":
+        if opcion == "Salir":
+            Iterable = 1
 
-			Iterable = 1
+        if opcion == "Cambiar":
+            Menu_Spotify()
 
-		if opcion == "Cambiar":
+            Iterable = 1
 
-			Menu_Spotify()
-
-			Iterable = 1
 
 def main() -> None:
+    Programa = str()
 
-	Programa = str()
+    while Programa != "Youtube" and Programa != "Spotify" and Programa != "SALIR":
+        print("Bienvendio su Aplicacion de Control de Playlist")
 
-	while Programa != "Youtube" and Programa != "Spotify" and Programa != "SALIR" :
+        Programa = input("Seleccione: | Youtube | o | Spotify | o | SALIR |: ")
 
-		print("Bienvendio su Aplicacion de Control de Playlist")
+        system("cls")
 
-		Programa = input("Seleccione: | Youtube | o | Spotify | o | SALIR |: ")
+    if Programa == "Spotify":
 
-		system("cls")
+        Menu_Spotify()
 
-	if Programa == "Spotify":
+    elif Programa == "Youtube":
 
-		Menu_Spotify()
+        Menu_Youtube()
 
-	elif Programa == "Youtube":
+    else:
 
-		Menu_Youtube()
+        print("Gracias, vuelva pronto")
 
-	else:
-
-		print("Gracias, vuelva pronto")
 
 main()

@@ -9,6 +9,8 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 
 import os
+
+from playlist.playlist import definir_playlist
  
 #Son los permisos que se le pediran al usuario
 SCOPES = ['https://www.googleapis.com/auth/youtube',
@@ -87,6 +89,43 @@ def Listar_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) ->
 
 		print("-------------------------------")
 
+def listar_playlist(youtube : 'googleapiclient.discovery.Resource')->dict:
+	"""
+		Precondicion: Tener acceso al servicio y tener alguna playlist
+		Poscondicion: Devuelve una lista de playlist
+	"""
+
+	#Obtiene la informacion de todas las playlist del usuario
+	info_playlist:any = youtube.playlists().list( part="snippet", mine=True).execute()
+	lista_playlist:list = []
+
+	#Ingresa a las playlist
+	for playlists in range(len(info_playlist['items'])):
+
+		playlist:dict = definir_playlist()
+		playlist["id"] = info_playlist['items'][playlists]['id']
+		playlist["nombre_playlist"] = info_playlist['items'][playlists]['snippet']['title']
+		datos_playlist = youtube.playlistItems().list( part = "snippet", playlistId = info_playlist['items'][playlists]['id'] , maxResults = 50).execute()
+		
+		for j in range(datos_playlist['pageInfo']['totalResults']):
+			playlist["lista_canciones"].append(datos_playlist['items'][j]['snippet']['title'])
+
+		lista_playlist.append(playlist)
+
+	return lista_playlist
+
+def crear_playlist(youtube : 'googleapiclient.discovery.Resource', nombre_playlist:str):
+	"""
+		Precondicion: Tener acceso al servicio
+		Poscondicion: None
+	"""
+	print("Ingrese alguna Descripcion:")
+	Descripcion = input("")
+
+	#Crea la playlist con los datos dados
+	youtube.playlists().insert(part = "snippet", body = dict(snippet = dict(title = nombre_playlist, description = Descripcion))).execute()
+
+
 #Crea una playlist para una cuenta de youtube
 def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> None:
 
@@ -102,3 +141,53 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 
 	#Crea la playlist con los datos dados
 	youtube.playlists().insert(part = "snippet", body = dict(snippet = dict(title = Nombre, description = Descripcion))).execute()
+
+
+#Pre: hace falta que max sea un int
+#Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
+#	   luego, una vez que esté  dentro del rango devuelve ese numero
+def pedir_centinela_int(max:int):
+	centinela = int(input("Seleccione: "))
+	while(centinela < 0 or centinela > max):
+		centinela = int(input("ERROR: Seleccione nuevamente: "))
+	return centinela
+
+
+def seleccionar_playlist_youtube(youtube : 'googleapiclient.discovery.Resource'):
+	Info_playlist = youtube.playlists().list( part="snippet", mine=True).execute()
+	for playlists in range(len(Info_playlist['items'])):
+		print(f" {playlists} - {Info_playlist['items'][playlists]['snippet']['title']}")
+
+	centinela:int = pedir_centinela_int(len(Info_playlist['items']))
+	
+	return Info_playlist['items'][centinela]
+
+#Pre: requiere que ya esté logueado en youtube
+#Post: Devuelve el id de la cancion y de que no coincida con la busqueda devuelve -1
+def buscar_cancion(youtube : 'googleapiclient.discovery.Resource', nombre_cancion:str):
+	resultado = youtube.search().list(
+				part = "id,snippet",
+				q = nombre_cancion,
+				maxResults = 5
+	).execute()
+
+	for i in range(len(resultado['items'])):
+		nombre_cancion_youtube:str = resultado['items'][i]['snippet']['title']
+		if(nombre_cancion_youtube.find(nombre_cancion) != -1):
+			return resultado['items'][i]['id']['videoId']
+		
+	return -1
+
+#Pre: Estar logueado en youtube, el objeto cancion y el objeto playlist
+#Post: Agrega la cancion a la playlist
+def insertar_cancion_en_playlist(youtube : 'googleapiclient.discovery.Resource', videoId:str, playlist_id):
+	youtube.playlistItems().insert(part = "snippet",
+	body = {
+		'snippet': {
+			'playlistId': playlist_id,
+			'resourceId': {
+					'kind': 'youtube#video',
+				'videoId': videoId,
+			}
+		}
+	}).execute()
