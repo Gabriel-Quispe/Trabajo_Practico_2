@@ -114,7 +114,7 @@ def listar_playlist(youtube : 'googleapiclient.discovery.Resource')->list:
 
     return lista_playlist
 
-def crear_playlist(youtube : 'googleapiclient.discovery.Resource', nombre_playlist:str):
+def crear_playlist(youtube : 'googleapiclient.discovery.Resource', nombre_playlist:str) -> None:
     """
         Precondicion: Tener acceso al servicio
         Poscondicion: None
@@ -145,8 +145,8 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 #Pre: hace falta que max sea un int
 #Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
 #	   luego, una vez que esté  dentro del rango devuelve ese numero
-def pedir_centinela_int(max:int):
-    centinela = int(input("Seleccione: "))
+def pedir_centinela_int(max:int) -> int:
+    centinela:int = int(input("Seleccione: "))
     while(centinela < 0 or centinela > max):
         centinela = int(input("ERROR: Seleccione nuevamente: "))
     return centinela
@@ -224,16 +224,6 @@ def insertar_en_playlist_youtube(youtube : 'googleapiclient.discovery.Resource',
     }).execute()
 
 
-#Pre: hace falta que max sea un int
-#Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
-#	   luego, una vez que esté  dentro del rango devuelve ese numero
-def pedir_centinela_int(max:int):
-    centinela = int(input("Seleccione: "))
-    while(centinela < 0 or centinela > max):
-        centinela = int(input("ERROR: Seleccione nuevamente: "))
-    return centinela
-
-
 #Pre: requiere que ya esté logueado en youtube
 #Post: Devuelve el id de la cancion y de que no coincida con la busqueda devuelve -1
 def buscar_cancion(youtube : 'googleapiclient.discovery.Resource', nombre_cancion:str):
@@ -252,7 +242,7 @@ def buscar_cancion(youtube : 'googleapiclient.discovery.Resource', nombre_cancio
 
 #Pre: Estar logueado en youtube, el objeto cancion y el objeto playlist
 #Post: Agrega la cancion a la playlist
-def insertar_cancion_en_playlist(youtube : 'googleapiclient.discovery.Resource', videoId:str, playlist_id):
+def insertar_cancion_en_playlist(youtube : 'googleapiclient.discovery.Resource', videoId:str, playlist_id) -> None:
     youtube.playlistItems().insert(part = "snippet",
     body = {
         'snippet': {

@@ -1,4 +1,5 @@
 import os
+import secrets
 import tekore as tk
 from tekore import RefreshingToken
 from tekore import Spotify
@@ -6,10 +7,26 @@ from tekore import Spotify
 from credenciales.spotify import spotify_credenciales
 from playlist.playlist import definir_playlist
 
-CLIENT_ID = spotify_credenciales.CLIENT_ID_GABRIEL
-CLIENT_SECRET = spotify_credenciales.CLIENT_ID_GABRIEL
-URL = spotify_credenciales.URL
 
+def logueo() -> tuple:
+    print(spotify_credenciales.USURIOS)
+    user:str = input("ingrese el usuario de spotify: ")
+    password:str = input("ingrese el la clave: ")
+    validado:bool = False
+    index:int = 0
+    for i in range(len(spotify_credenciales.USURIOS)):
+        if((spotify_credenciales.USURIOS[i]['user'] == user) and (spotify_credenciales.USURIOS[i]['password'] == password)):
+            validado = True
+            index = i
+
+    if(validado == False):
+        print("Error en el usuario o la clave")
+        logueo()
+
+    return (spotify_credenciales.USURIOS[index]['id'], 
+            spotify_credenciales.USURIOS[index]['secret'],
+            spotify_credenciales.USURIOS[index]['url'],
+            spotify_credenciales.USURIOS[index]['tokere_user'])
 
 # Permite acceder a los servicios de la API de spotify
 def Generar_Servicio_Spotify() -> Spotify:
@@ -17,21 +34,22 @@ def Generar_Servicio_Spotify() -> Spotify:
     Precondicion: Tener CLIENT ID and SECRET y haber ingresado la URL
     Poscondicion: Haber dado acceso completo, copiando la URL en la consola
     """
-
+    
     token: RefreshingToken = None
-    configuracion = (CLIENT_ID, CLIENT_SECRET, URL)
-
+    #configuracion = (CLIENT_ID, CLIENT_SECRET, URL)
+    id, secret, url, tekore_user = logueo()
+    configuracion = (id, secret, url)
     # Si existe el archivo con el token, lo refresca ("actualiza") y lo utiliza
-    if os.path.exists(spotify_credenciales.TOKERE_GABRIEL):
+    if os.path.exists(tekore_user):
 
-        configuracion: tuple = tk.config_from_file(spotify_credenciales.TOKERE_GABRIEL, return_refresh=True)
+        configuracion: tuple = tk.config_from_file(tekore_user, return_refresh=True)
         token = tk.refresh_user_token(*configuracion[:2], configuracion[3])
 
     # Si no existe lo crea
     elif (not token == True):
 
         token = tk.prompt_for_user_token(*configuracion, scope=tk.scope.every)
-        tk.config_to_file(spotify_credenciales.TOKERE_GABRIEL, configuracion + (token.refresh_token,))
+        tk.config_to_file(tekore_user, configuracion + (token.refresh_token,))
 
     # Utiliza el token y retorna el acceso a la API de spotify
     return tk.Spotify(token)
@@ -109,7 +127,7 @@ def Crear_Playlist_Spotify(spotify: Spotify) -> None:
 # Pre: hace falta que max sea un int
 # Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
 #	   luego, una vez que esté  dentro del rango devuelve ese numero
-def pedir_centinela_int(max: int):
+def pedir_centinela_int(max: int) -> int:
     centinela: int = int(input("Seleccione: "))
     while (centinela < 0 and centinela > max):
         centinela = int(input("ERROR: Seleccione nuevamente: "))
@@ -119,7 +137,7 @@ def pedir_centinela_int(max: int):
 
 # Pre: requiere que ya esté logueado en spotify
 # Post: le muestra al usuario todas las playlists que tiene y le da a elejir cual seleccionar, luego la devuelve
-def seleccionar_playlists_spotify(spotify: Spotify):
+def seleccionar_playlists_spotify(spotify: Spotify) -> list:
     print(f"Playlists en spotify de {spotify.user(spotify.current_user().id).display_name}:")
     for i in range(spotify.playlists(spotify.current_user().id).total):
         print(f" {i} - {spotify.playlists(spotify.current_user().id).items[i].name}")
@@ -135,7 +153,7 @@ def seleccionar_playlists_spotify(spotify: Spotify):
 def buscar_spotify(spotify: Spotify):
     rango_busqueda: int = 5
     buscador: str = input("ingrese que cancion quiere buscar: ")
-    track = spotify.search(buscador)
+    track: tuple= spotify.search(buscador)
     # track es una lista de los resultados devueltos por el search, oredeando por que tanto se asemeja la palabra clave
     if (len(track[0].items) == 0):
         print("no se encontro resultado")
@@ -192,7 +210,7 @@ def crear_playlist(spotify: Spotify, nombre_playlist: str) -> None:
     spotify.playlist_create(spotify.current_user().id, nombre_playlist, public=True, description="musica")
 
 
-def buscar_cancion(spotify: Spotify, cancion: str):
+def buscar_cancion(spotify: Spotify, cancion: str) -> int:
     """
         Precondicion: Inicializar el objeto spotify y tener el  nombre de la playlist que quiere buscar
         Poscondicion: Devuelve la lista de url si exite la cancion en caso contrario devuelve -1

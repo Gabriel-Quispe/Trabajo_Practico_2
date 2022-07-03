@@ -12,13 +12,6 @@ from vistas.vista_playlist import imprimir_lista_playlist, imprimir_titulos_play
 from exportar_playlist import exportar_playlist
 
 
-def leer_archivo_sinc(nombre_archivo:str, diccionario:dict) -> None:
-    archivo = open(nombre_archivo, "r")
-    diccionario['nombre_playlist'] = archivo.readline()
-    canciones_str = archivo.readline()
-    diccionario['lista_canciones'] = canciones_str.split(",")
-    archivo.close()
-
 def imprtimir_menu():
     print("------------------------------")
     print(" 1 | Listar Playlist ")
@@ -53,8 +46,6 @@ def Menu_Spotify() -> None:
         if opcion == "1":
             os.system("cls")
             SP.Listar_Playlist_Spotify(spotify)
-
-            input()
 
         elif opcion == "2":
             os.system("cls")

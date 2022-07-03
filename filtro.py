@@ -10,7 +10,7 @@ def comparar_str_a_en_b(a:str, b:str) -> bool:
 #Pre:  Recibe dos strings
 #Post: Si la duncion encuentra basura en nueva track, la borra, luego devuelve el string modificado, 
 # 	   si no encuentra nada lo devuelve como lo recibió
-def filtrar_string(nueva_track:str, basura:str):
+def filtrar_string(nueva_track:str, basura:str) -> str:
 	final:str = nueva_track
 	basura:str = basura.lower()
 	nueva_track =  nueva_track.lower()
@@ -22,7 +22,7 @@ def filtrar_string(nueva_track:str, basura:str):
 #Post: la funcion filtra palabras que podrian aparecer en ambos string las cuales perjudicarian el programa
 #      al momento de compara string, esto se encuentra m,çucho mas presente en youtube, 
 #      pero tambien lo aplicamosa para spotify
-def filtrar_palabras_titulo(canal:str, cancion:str):
+def filtrar_palabras_titulo(canal:str, cancion:str) -> tuple:
 	canal = filtrar_string(canal, "vevo")
 	canal = filtrar_string(canal, "official")
 	canal = filtrar_string(canal, "oficial")
@@ -91,7 +91,7 @@ def borrar_comentario(letra:str) -> str:
 	if(letra == None):
 		return None
 	while("[" in letra):
-		lista_aux1 = []
+		lista_aux1:list = []
 		lista_aux1.append(letra[0 : letra.index("[")])
 		lista_aux1.append(letra[letra.index("]") + 1 :])
 		letra = "".join(lista_aux1)
@@ -105,10 +105,10 @@ def borrar_comentario(letra:str) -> str:
 #      al lado de la plabra por lo que al momento de hacer split con espacio puede haber errores al momento de comaprar
 #      por ejemplo "casa" y "casa," las tomaria como dos pàlabras diferentes.
 #      Luego las separa y mete en el diccionario dado.
-def diccionario_de_palabras(dicc:dict, letra:str):
+def diccionario_de_palabras(dicc:dict, letra:str) -> None:
 	if(letra == None):
 		return
-	lista_palabras = []
+	lista_palabras:list = []
 	aux = letra.lower()
 	aux = aux.replace("\n", " ")
 	aux = aux.replace(",", "")
