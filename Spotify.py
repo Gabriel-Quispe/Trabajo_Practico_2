@@ -9,7 +9,6 @@ from playlist.playlist import definir_playlist
 
 
 def logueo() -> tuple:
-    print(spotify_credenciales.USURIOS)
     user:str = input("ingrese el usuario de spotify: ")
     password:str = input("ingrese el la clave: ")
     validado:bool = False

@@ -1,3 +1,4 @@
+import json
 #Pre:  que ambas variables seans strings
 #Post: La funcion compara si a se encuentra dentro de b, devuelve True si es ese el caso o False de lo contrario
 def comparar_str_a_en_b(a:str, b:str) -> bool:
@@ -23,6 +24,9 @@ def filtrar_string(nueva_track:str, basura:str) -> str:
 #      al momento de compara string, esto se encuentra m,çucho mas presente en youtube, 
 #      pero tambien lo aplicamosa para spotify
 def filtrar_palabras_titulo(canal:str, cancion:str) -> tuple:
+	if(canal == None or cancion == None):
+		return
+
 	canal = filtrar_string(canal, "vevo")
 	canal = filtrar_string(canal, "official")
 	canal = filtrar_string(canal, "oficial")
@@ -131,10 +135,13 @@ def diccionario_de_palabras(dicc:dict, letra:str) -> None:
 				dicc[lista_palabras[i]] = 1
 
 def convertir_diccionario(repes:dict) -> list:
+	if(repes == None):
+		return None
+	if(len(repes.keys())==0):
+		return None
 	dic_a_lista:list = []
 	dic_a_lista = list(repes.items())
 	dic_a_lista.sort(key = lambda x:x[1] , reverse = True)
 	for i in range(10):
 		print(f"Top {i}:  {dic_a_lista[i][0]} con {dic_a_lista[i][1]} ocurrencias")
-	#print(json.dumps(repes, indent = 3))
 	return dic_a_lista

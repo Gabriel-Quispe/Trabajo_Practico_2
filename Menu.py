@@ -1,3 +1,4 @@
+from functools import total_ordering
 import os
 
 import wordcloud
@@ -46,24 +47,24 @@ def Menu_Spotify() -> None:
         if opcion == "1":
             os.system("cls")
             SP.Listar_Playlist_Spotify(spotify)
+            return
 
         elif opcion == "2":
             os.system("cls")
             SP.Crear_Playlist_Spotify( spotify )
+            return
 
         elif opcion =="3":
             os.system("cls")
 
             nueva_track = SP.buscar_spotify(spotify)
             canal, cancion = filtro.filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
-            #genius_funcion(cancion, canal, True)
 
             playlist_agregar = SP.seleccionar_playlists_spotify(spotify)
             SP.insertar_en_playlist_spotify(spotify, playlist_agregar, nueva_track)
-            print(f"{canal}   {cancion}")
+            print(f"canal: {canal}   cancion:{cancion}")
             letra = genius.genius_total(canal, cancion, True)
 
-            #letra = genius_funcion(cancion, canal, True)
             #letra = borrar_comentario(letra)
 
             os.system("cls")
@@ -75,6 +76,7 @@ def Menu_Spotify() -> None:
             os.system("cls")
             repes = {}
             playlist_seleccionada = SP.seleccionar_playlists_spotify(spotify)
+
             print("Esto puede tradar.......")
             for j in range(spotify.playlist_items(playlist_seleccionada.id).total):
                 canal = spotify.playlist_items(playlist_seleccionada.id).items[j].track.artists[0].name
@@ -88,6 +90,8 @@ def Menu_Spotify() -> None:
                 print(f"letras calculadas {j} / {spotify.playlist_items(playlist_seleccionada.id).total}")
 
             dic_a_lista:list = filtro.convertir_diccionario(repes)
+            if(dic_a_lista == None):
+                return
             lista_cloud = []
             for i in range(len(dic_a_lista)):
                 lista_cloud.append(str(dic_a_lista[i][0]))
@@ -118,6 +122,7 @@ def Menu_Spotify() -> None:
             sincronizar_spotify.sincronizar_playlist(nombre_playlist, lista_playlist_spotify, lista_playlist_youtube,
                                                      youtube)
             return
+
         elif opcion == "6":
             os.system("clear")
             print(" Lista de PlayList ")
@@ -148,7 +153,7 @@ def Menu_Youtube() -> None:
     while Iterable == 0:
         os.system("cls")
         opcion = str()
-        spotify = SP.Generar_Servicio_Spotify()
+        #spotify = SP.Generar_Servicio_Spotify()
         youtube = YT.Generar_Servicios_Youtube()
 
         while opcion != "1" and opcion != "2" and opcion != "3" and opcion != "4" and opcion != "5" and opcion != "6" and opcion != "Salir" and opcion != "Cambiar" :
@@ -160,13 +165,13 @@ def Menu_Youtube() -> None:
         if opcion == "1":
             os.system("cls")
             YT.Listar_Playlist_Youtube( youtube )
-
-            input()
+            return
 
         elif opcion == "2":
             os.system("cls")
 
             YT.Crear_Playlist_Youtube( youtube )
+            return
 
         elif opcion =="3":
             palabra = YT.buscar_youtube(youtube)
@@ -199,6 +204,8 @@ def Menu_Youtube() -> None:
 
 
             dic_a_lista:list = filtro.convertir_diccionario(repes)
+            if(dic_a_lista == None):
+                return
             lista_cloud = []
             for i in range(len(dic_a_lista)):
                 lista_cloud.append(str(dic_a_lista[i][0]))
@@ -242,7 +249,6 @@ def Menu_Youtube() -> None:
             return
 
         if opcion == "Salir":
-
             Iterable = 1
 
         if opcion == "Cambiar":
