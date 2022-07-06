@@ -27,11 +27,10 @@ ARCHIVO_TOKEN = 'token.json'
 def login():
     login_valido: bool = True
     
-    user: str = input("Ingrese su usuario: ")
+    usuario: str = input("Ingrese su usuario: ")
     password: str = input("Ingrese su password: ")
           
           pass
-
 
 #Permite acceder a los servicios de la API de youtube
 def Generar_Servicios_Youtube() -> 'googleapiclient.discovery.Resource':
