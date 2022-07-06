@@ -24,6 +24,15 @@ ARCHIVO_SECRET_CLIENT = 'credenciales.json'
 #Este es el nombre del archivo donde se almacenara el token para acceder al servicio
 ARCHIVO_TOKEN = 'token.json'
 
+def login():
+    login_valido: bool = True
+    
+    user: str = input("Ingrese su usuario: ")
+    password: str = input("Ingrese su password: ")
+          
+          pass
+
+
 #Permite acceder a los servicios de la API de youtube
 def Generar_Servicios_Youtube() -> 'googleapiclient.discovery.Resource':
 
