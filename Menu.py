@@ -29,7 +29,7 @@ def Menu_Spotify() -> None:
     Iterable = 0
     try:
         spotify = SP.Generar_Servicio_Spotify()
-        youtube = YT.Generar_Servicios_Youtube()
+        #youtube = YT.Generar_Servicios_Youtube()
     except Exception:
         print(" Error en conexion de plataformas")
         return
@@ -91,6 +91,7 @@ def Menu_Spotify() -> None:
 
             dic_a_lista:list = filtro.convertir_diccionario(repes)
             if(dic_a_lista == None):
+                print("No se pudo encontrar ninguna letra en la playlist")
                 return
             lista_cloud = []
             for i in range(len(dic_a_lista)):
@@ -106,7 +107,7 @@ def Menu_Spotify() -> None:
             return
 
         elif opcion == "5":
-
+            youtube = YT.Generar_Servicios_Youtube()
             os.system("clear")
             print(" Lista de PlayList ")
             print("------------------------------")
@@ -205,6 +206,7 @@ def Menu_Youtube() -> None:
 
             dic_a_lista:list = filtro.convertir_diccionario(repes)
             if(dic_a_lista == None):
+                print("No se pudo encontrar ninguna letra en la playlist")
                 return
             lista_cloud = []
             for i in range(len(dic_a_lista)):
@@ -218,11 +220,11 @@ def Menu_Youtube() -> None:
 
         elif opcion == "5":
 
+            spotify = SP.Generar_Servicio_Spotify()
             os.system("clear")
             print(" Lista de PlayList ")
             print("------------------------------")
             print()
-
             lista_playlist_spotify: list = SP.listar_playlist(spotify)
             lista_playlist_youtube: list = YT.listar_playlist(youtube)
             imprimir_titulos_playlist(lista_playlist_youtube)
