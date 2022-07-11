@@ -1,4 +1,4 @@
-from __future__ import print_function
+
 from google.auth.transport.requests import Request
 from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -33,7 +33,8 @@ def Generar_Servicios_Youtube() -> 'googleapiclient.discovery.Resource':
     creds = None
     
     #Si existe un archivo con el token, lo usa
-    if os.path.exists(ARCHIVO_TOKEN):
+    prueba = os.path.exists('token.json')
+    if os.path.exists('token.json'):
 
         creds = Credentials.from_authorized_user_file(ARCHIVO_TOKEN, SCOPES)
     
