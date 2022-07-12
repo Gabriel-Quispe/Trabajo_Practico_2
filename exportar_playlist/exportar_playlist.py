@@ -1,5 +1,5 @@
-def exportar(playlist: dict, plataforma)-> None:
-    archivo = open("csv/playlist/{1}/{0}.csv".format(playlist['nombre_playlist'], plataforma), "w", newline="")
+def exportar(playlist: dict, plataforma) -> None:
+    archivo = open("../csv/playlist/{1}/{0}.csv".format(playlist['nombre_playlist'], plataforma), "w", newline="")
     archivo.write("Id : {0}\r\n".format(playlist['id']))
     archivo.write("Nombre : {0}\r\n".format(playlist['nombre_playlist']))
     archivo.write("Creador de la Playlist  : {0}\r\n".format(playlist['creador_playlist']))

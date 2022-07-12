@@ -1,5 +1,8 @@
+import os
+
 import Youtube as YT
-from playlist.playlist import buscar_playlist, esta_presente_playlist_en_la_lista
+from playlist.playlist import buscar_playlist, esta_presente_playlist_en_la_lista, \
+    esta_presente_la_cancion_en_la_playlist
 
 
 def sincronizar_playlist(nombre_playlist: str, lista_playlist_spotify: list, lista_playlist_youtube: list, youtube: any)-> None:
@@ -7,9 +10,9 @@ def sincronizar_playlist(nombre_playlist: str, lista_playlist_spotify: list, lis
         Precondicion: Recibir una nombre de la plyalist, lista_playlist y la plataforma con la se quiere sincronizar
         PostCondicion:
     """
-    archivo = open("canciones_no_existen_en_youtube.csv", "w", newline="")
+    archivo = open("../csv/canciones/{1}/{0}.csv".format("cancionesNoExistenEnYoutube", 'spotify'), "w", newline="")
 
-    if (not esta_presente_playlist_en_la_lista(nombre_playlist, lista_playlist_youtube)):
+    if not esta_presente_playlist_en_la_lista(nombre_playlist, lista_playlist_youtube):
 
         YT.crear_playlist(youtube, nombre_playlist)
         playlist_youtube: dict = buscar_playlist(nombre_playlist, YT.listar_playlist(youtube))
@@ -25,17 +28,17 @@ def sincronizar_playlist(nombre_playlist: str, lista_playlist_spotify: list, lis
     else:
         playlist_youtube: dict = buscar_playlist(nombre_playlist, YT.listar_playlist(youtube))
         playlist_spotify: dict = buscar_playlist(nombre_playlist, lista_playlist_spotify)
-        if (len(playlist_youtube["lista_canciones"]) == 0):
+        if len(playlist_youtube["lista_canciones"]) == 0:
             for cancion in playlist_spotify["lista_canciones"]:
                 YT.insertar_cancion_en_playlist(youtube, YT.buscar_cancion(youtube, cancion), playlist_youtube['id'])
         else:
             for cancion_spotify in playlist_spotify["lista_canciones"]:
-                for cancion_youtube in playlist_youtube["lista_canciones"]:
-                    if (cancion_youtube.find(cancion_spotify) == -1):
-                        id = YT.buscar_cancion(youtube, cancion_spotify)
-                        if (id != -1):
-                            YT.insertar_cancion_en_playlist(youtube, id, playlist_youtube['id'])
-                        else:
-                            archivo.write(cancion_spotify)
+                if not esta_presente_la_cancion_en_la_playlist(cancion_spotify, playlist_youtube["lista_canciones"]):
+                    id = YT.buscar_cancion(youtube, cancion_spotify)
+                    if id != -1:
+                        YT.insertar_cancion_en_playlist(youtube, id, playlist_youtube['id'])
+                    else:
+                        archivo.write(cancion_spotify)
 
     archivo.close()
+

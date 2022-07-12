@@ -8,7 +8,7 @@ import filtro
 import genius
 from playlist.playlist import buscar_playlist
 from sincronizar import sincronizar_spotify, sincronizar_youtube
-from vistas.vista_playlist import imprimir_lista_playlist, imprimir_titulos_playlist
+from vistas.vista import imprimir_lista_playlist, imprimir_titulos_playlist
 from exportar_playlist import exportar_playlist
 
 

@@ -17,6 +17,7 @@ def definir_playlist() -> dict:
     }
     return playlist
 
+
 def buscar_playlist(nombre_playlist: str, lista_playlist) -> dict:
     """
     Precondicion: Recibir el nombre de una playlist y una lista de playlist
@@ -41,4 +42,11 @@ def esta_presente_playlist_en_la_lista(nombre_playlist: str, lista_playlist: lis
         if (lista_playlist[i]["nombre_playlist"] == nombre_playlist):
             return True
 
+    return False
+
+
+def esta_presente_la_cancion_en_la_playlist(nombre_cancion, lista_canciones: list) -> bool:
+    for cancion in lista_canciones:
+        if cancion.find(nombre_cancion):
+            return True
     return False
