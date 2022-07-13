@@ -8,7 +8,7 @@ from tekore import Spotify
 from constantes.constantes import SPOTIFY, LISTA_OPCIONES
 from exportar_playlist import exportar_playlist
 from plataformas.spotify.crud import listar_playlist, crear_playlist, buscar_cancion, insertar_cancion_en_playlist, \
-    seleccionar_playlists_spotify
+    seleccionar_playlists_spotify, buscar_spotify
 from playlist.playlist import buscar_playlist
 from sincronizar import sincronizar_spotify
 from validar.input_platataforma import validar_input, validar_input_cancion, validar_input_titulo_playlist
@@ -41,27 +41,25 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
 
         elif opcion == LISTA_OPCIONES[2]:
 
-            os.system("clear")
-            nombre_cancion: str = validar_input_cancion()
-            nueva_track: any = buscar_cancion(spotify, nombre_cancion)
+            os.system("cls")
 
-            while len(nueva_track) == 0:
-                print("La cancion no existe ")
-                nombre_cancion: str = validar_input_cancion()
-                nueva_track: any = buscar_cancion(spotify, nombre_cancion)
-
+            nueva_track = buscar_spotify(spotify)
             canal, cancion = filtro.filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
+
             playlist_agregar = seleccionar_playlists_spotify(spotify)
             insertar_cancion_en_playlist(spotify, playlist_agregar.id, nueva_track)
-
-            print(f"{canal}   {cancion}")
+            print(f"canal: {canal}   cancion:{cancion}")
             letra = genius.genius_total(canal, cancion, True)
+
+            # letra = borrar_comentario(letra)
+
+            os.system("cls")
             print(letra)
-            print()
+
             volver = input("Escribir v para regresar al manu: ")
 
         elif opcion == LISTA_OPCIONES[3]:
-            os.system("clear")
+            os.system("cls")
             repes = {}
             playlist_seleccionada = seleccionar_playlists_spotify(spotify)
 
@@ -78,7 +76,7 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
                 print(f"letras calculadas {j} / {spotify.playlist_items(playlist_seleccionada.id).total}")
 
             dic_a_lista: list = filtro.convertir_diccionario(repes)
-            if dic_a_lista is None:
+            if (dic_a_lista == None):
                 print("No se pudo encontrar ninguna letra en la playlist")
                 return
             lista_cloud = []
@@ -86,9 +84,10 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
                 lista_cloud.append(str(dic_a_lista[i][0]))
 
             text = " ".join(lista_cloud)
+            # borra las palabras comunes como articulos y pronombres
             wordcloud2 = wordcloud.WordCloud(stopwords=None, max_words=10).generate(text)
             wordcloud2.to_file("cloud.png")
-            print()
+
             volver = input("Escribir v para regresar al manu: ")
 
         elif opcion == LISTA_OPCIONES[4]:

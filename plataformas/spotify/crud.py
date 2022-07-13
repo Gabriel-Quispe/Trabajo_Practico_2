@@ -93,6 +93,28 @@ def buscar_cancion(spotify: Spotify, cancion: str) -> any:
                 uri_cancion = track[0].items[i]
                 return uri_cancion
 
+def buscar_spotify(spotify: Spotify):
+    rango_busqueda: int = 5
+    buscador: str = input("ingrese que cancion quiere buscar: ")
+    track: tuple= spotify.search(buscador)
+    # track es una lista de los resultados devueltos por el search, oredeando por que tanto se asemeja la palabra clave
+    if (len(track[0].items) == 0):
+        print("no se encontro resultado")
+
+    else:
+        print("==========================================")
+        for i in range(rango_busqueda):
+            cancion: str = track[0].items[i].name
+            artista: str = track[0].items[i].artists[0].name
+            album: str = track[0].items[i].album.name
+            print(f" {i} - nombre: {cancion}, artista: {artista}, album: {album}")
+
+        print("==========================================")
+        centinela: int = pedir_centinela_int(rango_busqueda)
+        os.system("cls")
+
+    # al momento de añadir la cancion a la playlist tiene que ser una lista
+    return track[0].items[centinela]
 
 def insertar_cancion_en_playlist(spotify: Spotify, id_playlist: str, url_cancion: list) -> None:
     """
