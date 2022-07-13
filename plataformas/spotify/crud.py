@@ -7,7 +7,6 @@ from playlist.playlist import definir_playlist
 
 
 def listar_playlist(spotify: Spotify) -> list:
-
     """
         Precondicion: Tener acceso al servicio
         Poscondicion: retorna una la lista de playlist
@@ -42,6 +41,7 @@ def listar_playlist(spotify: Spotify) -> list:
 
     return lista_playlist
 
+
 # Pre: hace falta que max sea un int
 # Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
 #	   luego, una vez que esté  dentro del rango devuelve ese numero
@@ -71,21 +71,22 @@ def crear_playlist(spotify: Spotify, nombre_playlist: str) -> dict:
     Poscondicion: devuleve un diccionario del tipo playlist
     """
     playlist: dict = definir_playlist()
-    playlist["id"] = spotify.playlist_create(spotify.current_user().id, nombre_playlist, public=True, description="musica").id
+    playlist["id"] = spotify.playlist_create(spotify.current_user().id, nombre_playlist, public=True,
+                                             description="musica").id
     return playlist
 
 
-def buscar_cancion(spotify: Spotify, cancion: str) -> any:
+def buscar_cancion(spotify: Spotify, cancion: str) -> any :
     """
         Precondicion: Inicializar el objeto spotify y tener el  nombre de la playlist que quiere buscar
         Poscondicion: Devuelve la lista de url
-        """
+    """
     RANGO_CANCIONES: int = 5
     track = spotify.search(cancion)
-    uri_cancion: list = []
+    uri_cancion: any
 
     if len(track[0].items) == 0:
-        return uri_cancion
+        return -1
     else:
         for i in range(RANGO_CANCIONES):
             cancion_nombre: str = track[0].items[i].name
@@ -93,10 +94,11 @@ def buscar_cancion(spotify: Spotify, cancion: str) -> any:
                 uri_cancion = track[0].items[i]
                 return uri_cancion
 
+
 def buscar_spotify(spotify: Spotify):
     rango_busqueda: int = 5
     buscador: str = input("ingrese que cancion quiere buscar: ")
-    track: tuple= spotify.search(buscador)
+    track: tuple = spotify.search(buscador)
     # track es una lista de los resultados devueltos por el search, oredeando por que tanto se asemeja la palabra clave
     if (len(track[0].items) == 0):
         print("no se encontro resultado")
@@ -115,6 +117,7 @@ def buscar_spotify(spotify: Spotify):
 
     # al momento de añadir la cancion a la playlist tiene que ser una lista
     return track[0].items[centinela]
+
 
 def insertar_cancion_en_playlist(spotify: Spotify, id_playlist: str, url_cancion: list) -> None:
     """

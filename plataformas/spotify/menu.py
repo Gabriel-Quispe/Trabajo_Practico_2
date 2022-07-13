@@ -133,12 +133,12 @@ def agregar_canciones_playlist(spotify: Spotify, id_playlist: str) -> None:
         nombre_cancion: str = validar_input_cancion()
 
         if nombre_cancion != "-1":
-            uri_cancion: list = buscar_cancion(spotify, nombre_cancion)
+            uri_cancion: any = buscar_cancion(spotify, nombre_cancion)
 
-            while len(uri_cancion) == 0:
+            while uri_cancion == -1:
                 print("La cancion no existe ")
                 nombre_cancion: str = validar_input_cancion()
-                uri_cancion: list = buscar_cancion(spotify, nombre_cancion)
+                uri_cancion = buscar_cancion(spotify, nombre_cancion)
 
             insertar_cancion_en_playlist(spotify, id_playlist, uri_cancion)
             print("Ingresar -1 para terminar de agregar canciones")
