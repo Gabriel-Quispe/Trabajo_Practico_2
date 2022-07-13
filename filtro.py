@@ -9,7 +9,7 @@ def comparar_str_a_en_b(a:str, b:str) -> bool:
 	return False
 
 #Pre:  Recibe dos strings
-#Post: Si la duncion encuentra basura en nueva track, la borra, luego devuelve el string modificado, 
+#Post: Si la duncion encuentra basura en nueva track, la borra, luego devuelve el string modificado,
 # 	   si no encuentra nada lo devuelve como lo recibió
 def filtrar_string(nueva_track:str, basura:str) -> str:
 	final:str = nueva_track
@@ -21,7 +21,7 @@ def filtrar_string(nueva_track:str, basura:str) -> str:
 
 #Pre:  Recibe dos string, uno del artista, y la cancion
 #Post: la funcion filtra palabras que podrian aparecer en ambos string las cuales perjudicarian el programa
-#      al momento de compara string, esto se encuentra m,çucho mas presente en youtube, 
+#      al momento de compara string, esto se encuentra m,çucho mas presente en youtube,
 #      pero tambien lo aplicamosa para spotify
 def filtrar_palabras_titulo(canal:str, cancion:str) -> tuple:
 	if(canal == None or cancion == None):
@@ -103,7 +103,7 @@ def borrar_comentario(letra:str) -> str:
 	letra = letra[0: len(letra) - 8]
 	return letra
 
-#Pre:  Recibe un dicciorio que tiene como claves las palabras y valor la cantidad de veces que se dice 
+#Pre:  Recibe un dicciorio que tiene como claves las palabras y valor la cantidad de veces que se dice
 #      hace falta que el diccionario esté creado pero no pasa nada si está vacio
 #Post: La funcion primero reemplaza algunos de los caracretes mas comunes lso cuales se encuentran inmediatamnte
 #      al lado de la plabra por lo que al momento de hacer split con espacio puede haber errores al momento de comaprar
