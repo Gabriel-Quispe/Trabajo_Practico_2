@@ -2,13 +2,14 @@ import os
 import filtro
 import genius
 import wordcloud
-import Youtube as YT
 
 from tekore import Spotify
 from constantes.constantes import SPOTIFY, LISTA_OPCIONES
 from exportar_playlist import exportar_playlist
-from plataformas.spotify.crud import listar_playlist, crear_playlist, buscar_cancion, insertar_cancion_en_playlist, \
+from plataformas.spotify.crud import listar_playlist_en_spotify, crear_playlist_en_spotify, buscar_cancion_en_spotify, insertar_cancion_en_playlist_spotify, \
     seleccionar_playlists_spotify, buscar_spotify
+
+from plataformas.youtube.crud import listar_playlist_en_youtube
 from playlist.playlist import buscar_playlist
 from sincronizar import sincronizar_spotify
 from validar.input_platataforma import validar_input, validar_input_cancion, validar_input_titulo_playlist
@@ -28,13 +29,13 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
         if opcion == LISTA_OPCIONES[0]:
             os.system("clear")
             print("Cargando playlist ................................")
-            imprimir_lista_playlist(listar_playlist(spotify))
+            imprimir_lista_playlist(listar_playlist_en_spotify(spotify))
             volver = input("Escribir v para regresar al manu: ")
 
         elif opcion == LISTA_OPCIONES[1]:
             os.system("clear")
             nombre_playlist = input("Ingresar el nombre de la playlist: ")
-            playlist_creada: dict = crear_playlist(spotify, nombre_playlist)
+            playlist_creada: dict = crear_playlist_en_spotify(spotify, nombre_playlist)
             linea_divisora()
             agregar_canciones_playlist(spotify, playlist_creada["id"])
             volver = input("Escribir v para regresar al manu: ")
@@ -47,7 +48,7 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
             canal, cancion = filtro.filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
 
             playlist_agregar = seleccionar_playlists_spotify(spotify)
-            insertar_cancion_en_playlist(spotify, playlist_agregar.id, nueva_track)
+            insertar_cancion_en_playlist_spotify(spotify, playlist_agregar.id, nueva_track)
             print(f"canal: {canal}   cancion:{cancion}")
             letra = genius.genius_total(canal, cancion, True)
 
@@ -96,8 +97,8 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
             print("------------------------------")
             print()
 
-            lista_playlist_spotify: list = listar_playlist(spotify)
-            lista_playlist_youtube: list = YT.listar_playlist(youtube)
+            lista_playlist_spotify: list = listar_playlist_en_spotify(spotify)
+            lista_playlist_youtube: list = listar_playlist_en_youtube(youtube)
             imprimir_titulos_playlist(lista_playlist_spotify)
             print()
             print("------------------------------")
@@ -111,7 +112,7 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
             print(" Lista de PlayList ")
             print("------------------------------")
             print()
-            lista_playlist_csv: list = listar_playlist(spotify)
+            lista_playlist_csv: list = listar_playlist_en_spotify(spotify)
             imprimir_titulos_playlist(lista_playlist_csv)
             print()
             nombre_de_la_playlist: str = validar_input_titulo_playlist(lista_playlist_csv)
@@ -133,14 +134,14 @@ def agregar_canciones_playlist(spotify: Spotify, id_playlist: str) -> None:
         nombre_cancion: str = validar_input_cancion()
 
         if nombre_cancion != "-1":
-            uri_cancion: any = buscar_cancion(spotify, nombre_cancion)
+            uri_cancion: any = buscar_cancion_en_spotify(spotify, nombre_cancion)
 
             while uri_cancion == -1:
                 print("La cancion no existe ")
                 nombre_cancion: str = validar_input_cancion()
-                uri_cancion = buscar_cancion(spotify, nombre_cancion)
+                uri_cancion = buscar_cancion_en_spotify(spotify, nombre_cancion)
 
-            insertar_cancion_en_playlist(spotify, id_playlist, uri_cancion)
+            insertar_cancion_en_playlist_spotify(spotify, id_playlist, uri_cancion)
             print("Ingresar -1 para terminar de agregar canciones")
             print()
         else:

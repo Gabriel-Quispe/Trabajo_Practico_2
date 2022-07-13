@@ -278,5 +278,4 @@ def main() -> None:
     else:
         print("Gracias, vuelva pronto")
 
-main()
 

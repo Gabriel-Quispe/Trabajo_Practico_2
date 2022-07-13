@@ -5,6 +5,7 @@ from tekore import Spotify
 from constantes.constantes import SALIR, INICIO
 from plataformas.spotify.menu import menu_spotify
 from plataformas.spotify.servicio import generar_servicio_spotify
+from plataformas.youtube.menu import menu_youtube
 from plataformas.youtube.servicio import generar_servicios_youtube
 from validar.input_platataforma import validar_input
 from vistas.vista import linea_divisora
@@ -25,8 +26,10 @@ def menu_plataformas(usuario: dict) -> str:
     if nombre_plataforma == usuario["plataformas"][0]["nombre"]:
         menu_spotify(spotify, youtube)
     else:
-        print("hola")
+        menu_youtube(spotify, youtube)
+        
     salir_plataforma: str = input("Si desea Salir del organizador de paltaformas oprima? Si/No: ")
+    
     if salir_plataforma == "Si":
         return SALIR
     else:

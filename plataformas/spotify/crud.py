@@ -6,7 +6,7 @@ from tekore._model import SimplePlaylist
 from playlist.playlist import definir_playlist
 
 
-def listar_playlist(spotify: Spotify) -> list:
+def listar_playlist_en_spotify(spotify: Spotify) -> list:
     """
         Precondicion: Tener acceso al servicio
         Poscondicion: retorna una la lista de playlist
@@ -65,7 +65,7 @@ def seleccionar_playlists_spotify(spotify: Spotify) -> SimplePlaylist:
     return spotify.playlists(spotify.current_user().id).items[centinela]
 
 
-def crear_playlist(spotify: Spotify, nombre_playlist: str) -> dict:
+def crear_playlist_en_spotify(spotify: Spotify, nombre_playlist: str) -> dict:
     """
     Precondicion: Inicializar el objeto spotify y tener el nombre de la playlist que quiere crear
     Poscondicion: devuleve un diccionario del tipo playlist
@@ -76,7 +76,7 @@ def crear_playlist(spotify: Spotify, nombre_playlist: str) -> dict:
     return playlist
 
 
-def buscar_cancion(spotify: Spotify, cancion: str) -> any :
+def buscar_cancion_en_spotify(spotify: Spotify, cancion: str) -> any :
     """
         Precondicion: Inicializar el objeto spotify y tener el  nombre de la playlist que quiere buscar
         Poscondicion: Devuelve la lista de url
@@ -119,7 +119,7 @@ def buscar_spotify(spotify: Spotify):
     return track[0].items[centinela]
 
 
-def insertar_cancion_en_playlist(spotify: Spotify, id_playlist: str, url_cancion: list) -> None:
+def insertar_cancion_en_playlist_spotify(spotify: Spotify, id_playlist: str, url_cancion: list) -> None:
     """
         Precondicion: Inicializar el objeto spotify, id de la playlist y url de la cancion que se desea agregar
         Poscondicion: None
