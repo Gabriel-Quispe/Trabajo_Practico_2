@@ -24,14 +24,6 @@ ARCHIVO_SECRET_CLIENT = 'credenciales.json'
 #Este es el nombre del archivo donde se almacenara el token para acceder al servicio
 ARCHIVO_TOKEN = 'token.json'
 
-def login():
-    login_valido: bool = True
-    
-    usuario: str = input("Ingrese su usuario: ")
-    password: str = input("Ingrese su password: ")
-          
-    #pass
-
 #Permite acceder a los servicios de la API de youtube
 def Generar_Servicios_Youtube() -> 'googleapiclient.discovery.Resource':
 
@@ -154,11 +146,17 @@ def Crear_Playlist_Youtube( youtube : 'googleapiclient.discovery.Resource' ) -> 
 #Pre: hace falta que max sea un int
 #Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
 #	   luego, una vez que esté  dentro del rango devuelve ese numero
-def pedir_centinela_int(max:int) -> int:
-    centinela:int = int(input("Seleccione: "))
-    while(centinela < 0 or centinela > max):
-        centinela = int(input("ERROR: Seleccione nuevamente: "))
-    return centinela
+def pedir_centinela_int(max: int) -> int:
+    centinela: int = input("Seleccione: ")
+    validar:bool = True
+    while (validar== True):
+        if(centinela.isdecimal() == True):
+            if(int(centinela) < 0 and int(centinela) > max):
+                validar = False
+        if(validar == True):
+            centinela = input("ERROR: Seleccione nuevamente: ")
+            
+    return int(centinela)
 
 
 def sincronizar_lista_youtube(youtube : 'googleapiclient.discovery.Resource') -> None:
