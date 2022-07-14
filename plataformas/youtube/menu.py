@@ -1,10 +1,14 @@
 import os
+from time import sleep
+
 from tekore import Spotify
 
 from constantes.constantes import YOUTUBE, LISTA_OPCIONES
-from plataformas.youtube.crud import listar_playlist_en_youtube
-from validar.input_platataforma import validar_input
-from vistas.vista import imprimir_lista_playlist, imprtimir_menu
+from plataformas.youtube.crud import listar_playlist_en_youtube, crear_playlist_en_youtube, buscar_cancion_en_youtube, \
+    insertar_cancion_en_playlist_youtube
+from playlist.playlist import buscar_playlist
+from validar.input_platataforma import validar_input, validar_input_cancion
+from vistas.vista import imprimir_lista_playlist, imprtimir_menu, linea_divisora
 
 
 def menu_youtube(spotify: Spotify, youtube: any) -> None:
@@ -23,6 +27,17 @@ def menu_youtube(spotify: Spotify, youtube: any) -> None:
             imprimir_lista_playlist(listar_playlist_en_youtube(youtube))
             print()
             volver = input("Escribir v para regresar al manu: ")
+
+        elif opcion == LISTA_OPCIONES[1]:
+            os.system("clear")
+            nombre_playlist = input("Ingresar el nombre de la playlist: ")
+            crear_playlist_en_youtube(youtube, nombre_playlist)
+            playlist_youtube: dict = buscar_playlist(nombre_playlist, listar_playlist_en_youtube(youtube))
+            linea_divisora()
+            agregar_canciones_playlist(youtube, playlist_youtube["id"])
+            volver = input("Escribir v para regresar al manu: ")
+
+
 """
         while Iterable == 0:
         os.system("cls")
@@ -132,3 +147,32 @@ def menu_youtube(spotify: Spotify, youtube: any) -> None:
 
             Iterable = 1
 """
+
+
+def agregar_canciones_playlist(youtube: any, id_playlist: str) -> None:
+    contador: int = 0
+    print("Agregar canciones en la playlist")
+    print()
+    while contador != -1:
+
+        nombre_cancion: str = validar_input_cancion()
+
+        if nombre_cancion != "-1":
+            video: any = buscar_cancion_en_youtube(youtube, nombre_cancion.title())
+
+            while video == -1:
+                print("La cancion no existe ")
+                nombre_cancion: str = validar_input_cancion()
+                video = buscar_cancion_en_youtube(youtube, nombre_cancion.title())
+                contador = contador + 1
+                if contador == 4:
+                    print("La cancion no se encuentra intente mas tarde")
+                    contador = -1
+                    sleep(4.0)
+
+            if contador != -1:
+                insertar_cancion_en_playlist_youtube(youtube, video, id_playlist)
+                print("Ingresar -1 para terminar de agregar canciones")
+                print()
+        else:
+            contador = -1

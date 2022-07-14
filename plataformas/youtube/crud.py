@@ -69,8 +69,7 @@ def crear_playlist_en_youtube(youtube: 'googleapiclient.discovery.Resource', nom
     print("Ingrese alguna Descripcion:")
     descripcion: str = input("")
 
-    youtube.playlists().insert(part="snippet",
-                               body=dict(snippet=dict(title=nombre_playlist, description=descripcion)).execute())
+    youtube.playlists().insert(part="snippet", body=dict(snippet=dict(title=nombre_playlist, description=descripcion))).execute()
 
 
 def Crear_Playlist_Youtube(youtube: 'googleapiclient.discovery.Resource') -> None:
