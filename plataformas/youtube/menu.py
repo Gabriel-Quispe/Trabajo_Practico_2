@@ -1,11 +1,13 @@
 import os
+import filtro
+import genius
+import wordcloud
+
 from time import sleep
-
 from tekore import Spotify
-
 from constantes.constantes import YOUTUBE, LISTA_OPCIONES
 from plataformas.youtube.crud import listar_playlist_en_youtube, crear_playlist_en_youtube, buscar_cancion_en_youtube, \
-    insertar_cancion_en_playlist_youtube
+    insertar_cancion_en_playlist_youtube, buscar_youtube, seleccionar_playlist_youtube, insertar_en_playlist_youtube
 from playlist.playlist import buscar_playlist
 from validar.input_platataforma import validar_input, validar_input_cancion
 from vistas.vista import imprimir_lista_playlist, imprtimir_menu, linea_divisora
@@ -37,6 +39,52 @@ def menu_youtube(spotify: Spotify, youtube: any) -> None:
             agregar_canciones_playlist(youtube, playlist_youtube["id"])
             volver = input("Escribir v para regresar al manu: ")
 
+        elif opcion == LISTA_OPCIONES[2]:
+            palabra = buscar_youtube(youtube)
+            playlist_seleccionada = seleccionar_playlist_youtube(youtube)
+            insertar_en_playlist_youtube(youtube, palabra, playlist_seleccionada)
+            # canal, cancion = filtro.filtrar_palabras_titulo(nueva_track.artists[0].name, nueva_track.name)
+            canal, cancion = filtro.filtrar_palabras_titulo(palabra['snippet']['channelTitle'],
+                                                            palabra['snippet']['title'])
+            print(f"{canal}   {cancion}")
+            letra = genius.genius_total(canal, cancion, True)
+
+            os.system("cls")
+            print(letra)
+            print()
+            volver = input("Escribir v para regresar al manu: ")
+
+        elif opcion == LISTA_OPCIONES[3]:
+            os.system("cls")
+            repes = {}
+            playlist_seleccionada = seleccionar_playlist_youtube(youtube)
+            Datos_playlist = youtube.playlistItems().list(part="snippet", playlistId=playlist_seleccionada['id'],
+                                                          maxResults=50).execute()
+            print("Esto puede tradar.......")
+            for j in range(Datos_playlist['pageInfo']['totalResults']):
+                canal = Datos_playlist['items'][j]['snippet']['videoOwnerChannelTitle']
+                cancion = Datos_playlist['items'][j]['snippet']['title']
+                canal, cancion = filtro.filtrar_palabras_titulo(canal, cancion)
+
+                letra = genius.genius_total(canal, cancion, False)
+                filtro.diccionario_de_palabras(repes, letra)
+                os.system("cls")
+                print(f"letras calculadas {j} / {Datos_playlist['pageInfo']['totalResults']}")
+
+            dic_a_lista: list = filtro.convertir_diccionario(repes)
+            if (dic_a_lista == None):
+                print("No se pudo encontrar ninguna letra en la playlist")
+                return
+            lista_cloud = []
+            for i in range(len(dic_a_lista)):
+                lista_cloud.append(str(dic_a_lista[i][0]))
+
+            text = " ".join(lista_cloud)
+            # borra las palabras comunes como articulos y pronombres
+            wordcloud2 = wordcloud.WordCloud(stopwords=None, max_words=10).generate(text)
+            wordcloud2.to_file("cloud.png")
+            print()
+            volver = input("Escribir v para regresar al manu: ")
 
 """
         while Iterable == 0:
