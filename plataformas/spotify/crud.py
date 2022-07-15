@@ -11,35 +11,31 @@ def listar_playlist_en_spotify(spotify: Spotify) -> list:
         Precondicion: Tener acceso al servicio
         Poscondicion: retorna una la lista de playlist
     """
-
     lista_playlist: list = []
-    cantidad_de_playlist: int = spotify.playlists(spotify.current_user().id).total
+    try:
+        spotify_playlist: list = spotify.playlists(spotify.current_user().id).items
+        for i in range(len(spotify_playlist)):
 
-    for i in range(cantidad_de_playlist):
+            playlist: dict = definir_playlist()
+            playlist["id"] = spotify_playlist[i].id
+            playlist["nombre_playlist"] = spotify_playlist[i].name
+            playlist["descripcion"] = spotify_playlist[i].description
+            playlist["creador_playlist"] = spotify_playlist[i].owner.display_name
+            playlist["tipo_playlist"] = spotify_playlist[i].public
+            playlist["url"] = spotify_playlist[i].owner.external_urls["spotify"]
 
-        playlist: dict = definir_playlist()
-        playlist["id"] = spotify.playlists(spotify.current_user().id).items[i].id
-        playlist["nombre_playlist"] = spotify.playlists(spotify.current_user().id).items[i].name
-        playlist["descripcion"] = spotify.playlists(spotify.current_user().id).items[i].description
-        playlist["creador_playlist"] = spotify.playlists(spotify.current_user().id).items[i].owner.display_name
-        playlist["tipo_playlist"] = spotify.playlists(spotify.current_user().id).items[i].public
-        playlist["url"] = spotify.playlists(spotify.current_user().id).items[i].owner.external_urls["spotify"]
+            playlist_total: int = spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).total
+            for j in range(playlist_total):
+                playlist["lista_canciones"].append(
+                    spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[j].track.name)
 
-        for j in range(spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).total):
-            playlist["duracion_playlist"] = \
-                spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[
-                    j].track.duration_ms + playlist["duracion_playlist"]
-            playlist["listar_artistas"].append(
-                spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[j].track.artists[
-                    0].name
-            )
-            playlist["lista_canciones"].append(
-                spotify.playlist_items(spotify.playlists(spotify.current_user().id).items[i].id).items[j].track.name)
+            playlist["cantidad_canciones"] = len(playlist["lista_canciones"])
+            lista_playlist.append(playlist)
+        return lista_playlist
+    except:
+        print("Spotify no responde")
+        return lista_playlist
 
-        playlist["cantidad_canciones"] = len(playlist["lista_canciones"])
-        lista_playlist.append(playlist)
-
-    return lista_playlist
 
 
 # Pre: hace falta que max sea un int

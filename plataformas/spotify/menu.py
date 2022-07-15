@@ -31,9 +31,13 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
         if opcion == LISTA_OPCIONES[0]:
             os.system("clear")
             print("Cargando playlist ................................")
-            imprimir_lista_playlist(listar_playlist_en_spotify(spotify))
-            volver = input("Escribir v para regresar al manu: ")
-
+            lista: list = listar_playlist_en_spotify(spotify)
+            if len(lista) !=0:
+                imprimir_lista_playlist(lista)
+                volver = input("Escribir v para regresar al manu: ")
+            else:
+                print("Intentar mas Tarde")
+                volver = input("Escribir v para regresar al manu: ")
         elif opcion == LISTA_OPCIONES[1]:
             os.system("clear")
             nombre_playlist = input("Ingresar el nombre de la playlist: ")
@@ -100,14 +104,19 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
             print()
 
             lista_playlist_spotify: list = listar_playlist_en_spotify(spotify)
-            lista_playlist_youtube: list = listar_playlist_en_youtube(youtube)
-            imprimir_titulos_playlist(lista_playlist_spotify)
-            print()
-            print("------------------------------")
-            nombre_playlist: str = validar_input_titulo_playlist(lista_playlist_spotify)
-            sincronizar_spotify.sincronizar_playlist(nombre_playlist, lista_playlist_spotify, lista_playlist_youtube,
+            if len(lista_playlist_spotify) != 0:
+                lista_playlist_youtube: list = listar_playlist_en_youtube(youtube)
+                imprimir_titulos_playlist(lista_playlist_spotify)
+                print()
+                print("------------------------------")
+                nombre_playlist: str = validar_input_titulo_playlist(lista_playlist_spotify)
+                sincronizar_spotify.sincronizar_playlist(nombre_playlist, lista_playlist_spotify, lista_playlist_youtube,
                                                      youtube)
-            volver = input("Escribir v para regresar al manu: ")
+                volver = input("Escribir v para regresar al manu: ")
+            else:
+                print("Intente mas tarde")
+                print()
+                volver = input("Escribir v para regresar al manu: ")
 
         elif opcion == LISTA_OPCIONES[5]:
             os.system("clear")
