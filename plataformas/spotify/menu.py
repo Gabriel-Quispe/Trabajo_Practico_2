@@ -1,6 +1,8 @@
 import os
-import filtro
-import genius
+from time import sleep
+
+from filtro import filtro
+from genius import genius
 import wordcloud
 
 from tekore import Spotify
@@ -118,7 +120,9 @@ def menu_spotify(spotify: Spotify, youtube: any) -> None:
             nombre_de_la_playlist: str = validar_input_titulo_playlist(lista_playlist_csv)
             playlist: dict = buscar_playlist(nombre_de_la_playlist, lista_playlist_csv)
             exportar_playlist.exportar(playlist, 'spotify')
-
+            print("La playlist se exporto correctamente")
+            sleep(5.0)
+            print()
             volver = input("Escribir v para regresar al manu: ")
 
         elif opcion == LISTA_OPCIONES[6]:

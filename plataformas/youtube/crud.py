@@ -91,10 +91,16 @@ def Crear_Playlist_Youtube(youtube: 'googleapiclient.discovery.Resource') -> Non
 # Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
 #	   luego, una vez que esté  dentro del rango devuelve ese numero
 def pedir_centinela_int(max: int) -> int:
-    centinela: int = int(input("Seleccione: "))
-    while (centinela < 0 or centinela > max):
-        centinela = int(input("ERROR: Seleccione nuevamente: "))
-    return centinela
+    centinela: int = input("Seleccione: ")
+    validar: bool = True
+    while (validar == True):
+        if (centinela.isdecimal() == True):
+            if (int(centinela) < 0 and int(centinela) > max):
+                validar = False
+        if (validar == True):
+            centinela = input("ERROR: Seleccione nuevamente: ")
+
+    return int(centinela)
 
 
 # Pre: requiere que ya esté logueado en youtube

@@ -1,4 +1,10 @@
 def validar_input(lista: list, contexto: str) -> str:
+
+    """
+        Pre-condicion: recibir una lista de parametros y el contexto
+        Post-Condicion: devuelve el dato validado
+    """
+
     valor_corte: int = 1
     dato: str = input("Ingresar {0}: ".format(contexto))
 
@@ -14,6 +20,11 @@ def validar_input(lista: list, contexto: str) -> str:
 
 
 def validar_input_cancion() -> str:
+    """
+        Pre-condicion: None
+        Post-Condicion: devuelve el nombre de la cancion
+    """
+
     nombre_cancion: str = input("Ingresar nombre de la cancion: ")
     contador: int = 0
     while contador != -1:
@@ -27,6 +38,11 @@ def validar_input_cancion() -> str:
 
 
 def validar_input_titulo_playlist(lista_playlist: list) -> str:
+    """
+         Pre-condicion: recibir una lista de playlist
+         Post-Condicion: devuelve el nombre de la playlist
+     """
+
     valor_corte: int = 1
     dato: str = input("Ingresar nombre de la playlist : ")
     while valor_corte != -1:

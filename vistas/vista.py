@@ -2,6 +2,10 @@ import os
 
 
 def imprimir_lista_playlist(lista_playlist: list) -> None:
+    """
+         Pre-condicion: Recibir lista de playlist
+         Post-Condicion: None
+     """
     for i in range(len(lista_playlist)):
         print(lista_playlist[i]["nombre_playlist"] + ":")
         for canciones in lista_playlist[i]["lista_canciones"]:
@@ -9,15 +13,31 @@ def imprimir_lista_playlist(lista_playlist: list) -> None:
 
 
 def imprimir_titulos_playlist(lista_playlist: list) -> None:
+    """
+        Pre-condicion: Recibir lista de playlist
+        Post-Condicion: None
+    """
+
     for posicion_playlist in range(len(lista_playlist)):
         print("No. {1} - {0} ".format(lista_playlist[posicion_playlist]["nombre_playlist"], posicion_playlist))
 
 
 def linea_divisora() -> None:
+    """
+       Pre-condicion: Recibir lista de playlist
+       Post-Condicion: None
+    """
+
     linea: str = "-"
     print(linea * 60)
 
+
 def pantalla_inicio() -> None:
+    """
+       Pre-condicion: Recibir lista de playlist
+       Post-Condicion: None
+    """
+
     os.system("clear")
     print()
     print("Organizador de Plataformas TEAM - 7")

@@ -27,12 +27,3 @@ USUARIOS: list = [
                 ]
             }
         ]
-
-def iniciar_usuario() -> dict:
-
-    usuario: dict = {
-        'user': str,
-        'password': str,
-        'plataformas': []
-    }
-    return usuario

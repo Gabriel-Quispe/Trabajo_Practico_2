@@ -46,11 +46,16 @@ def listar_playlist_en_spotify(spotify: Spotify) -> list:
 # Post: Le pide al usuario que ingrese un numero dentre 0 y el maximo dado
 #	   luego, una vez que esté  dentro del rango devuelve ese numero
 def pedir_centinela_int(max: int) -> int:
-    centinela: int = int(input("Seleccione: "))
-    while (centinela < 0 and centinela > max):
-        centinela = int(input("ERROR: Seleccione nuevamente: "))
+    centinela: int = input("Seleccione: ")
+    validar: bool = True
+    while (validar == True):
+        if (centinela.isdecimal() == True):
+            if (int(centinela) < 0 and int(centinela) > max):
+                validar = False
+        if (validar == True):
+            centinela = input("ERROR: Seleccione nuevamente: ")
 
-    return centinela
+    return int(centinela)
 
 
 # Pre: requiere que ya esté logueado en spotify
