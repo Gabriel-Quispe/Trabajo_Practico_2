@@ -51,5 +51,5 @@ def validar_input_titulo_playlist(lista_playlist: list) -> str:
                 return dato
         if valor_corte == 1:
             print("La playlist no existe")
-            dato: str = input("Ingresar nombre de la playlist a sincronizar: ")
+            dato: str = input("Ingresar nombre de la playlist: ")
     return dato
